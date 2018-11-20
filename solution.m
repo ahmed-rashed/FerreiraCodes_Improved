@@ -1,9 +1,11 @@
-%................................................................
+function [displacements,force]=solution(prescribedDof,K,displacements,force)
 
-function displacements=solution(GDof,prescribedDof,stiffness,force)
-% function to find solution in terms of global displacements
-activeDof=setdiff([1:GDof]', ...
-    [prescribedDof]);
-U=stiffness(activeDof,activeDof)\force(activeDof);
-displacements=zeros(GDof,1);
-displacements(activeDof)=U;
+GDof=length(displacements);
+
+freeDof=setdiff(1:GDof,prescribedDof);
+
+displacements(freeDof)=K(freeDof,freeDof)\force(freeDof);
+
+nonZeroDof=find(displacements~=0);
+
+force(prescribedDof)=K(prescribedDof,nonZeroDof)*displacements(nonZeroDof);

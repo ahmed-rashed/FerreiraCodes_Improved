@@ -1,7 +1,4 @@
-%................................................................
-
-function [stiffness,mass]=formStiffness2D(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C,rho,thickness)
+function [stiffness,mass]=formStiffness2D(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,C,rho,thickness)
 
 % compute stiffness matrix (and mass matrix)
 % for plane stress Q4 elements
@@ -12,17 +9,17 @@ mass=zeros(GDof);
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
-for e=1:numberElements                           
+for e=1:numberElements
   indice=elementNodes(e,:); 
   elementDof=[ indice indice+numberNodes ];   
   ndof=length(indice);
   
   % cycle for Gauss point
-  for q=1:size(gaussWeights,1)                      
-    GaussPoint=gaussLocations(q,:);                                                     
+  for q=1:size(gaussWeights,1)
+    GaussPoint=gaussLocations(q,:);
     xi=GaussPoint(1);
     eta=GaussPoint(2);
-    
+
 % shape functions and derivatives
     [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
 
@@ -41,7 +38,7 @@ for e=1:numberElements
 % stiffness matrix
     stiffness(elementDof,elementDof)=...
         stiffness(elementDof,elementDof)+...
-        B'*C*thickness*B*gaussWeights(q)*det(Jacob);    
+        B'*C*thickness*B*gaussWeights(q)*det(Jacob);
 % mass matrix
     mass(indice,indice)=mass(indice,indice)+...
         shapeFunction*shapeFunction'*...
@@ -51,5 +48,5 @@ for e=1:numberElements
         shapeFunction*shapeFunction'*...
         rho*thickness*gaussWeights(q)*det(Jacob);
 
-  end  
-end    
+  end
+end

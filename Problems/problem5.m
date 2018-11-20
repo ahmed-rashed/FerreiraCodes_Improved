@@ -5,7 +5,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all
+clearvars
 
 % E; modulus of elasticity
 % A: area of cross section
@@ -34,8 +34,7 @@ force(12)=-50000;
 
 % computation of the system stiffness matrix
  [stiffness]=...
-    formStiffness2Dtruss(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,xx,yy,EA);
+    formStiffness2Dtruss(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,xx,yy,EA);
 
 % boundary conditions and solution
 prescribedDof=[1 2 10]';

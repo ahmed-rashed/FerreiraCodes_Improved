@@ -12,7 +12,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all;colordef white;clf
+clearvars;colordef white;clf
 
 % materials
 thickness=0.001;h=thickness;kapa=pi*pi/12;

@@ -6,7 +6,7 @@
 % of Mindlin plates using 3 degrees of freedom per node
 % antonio ferreira 2008
 
-clear all
+clearvars
 colordef white
 
 % L: side lenght

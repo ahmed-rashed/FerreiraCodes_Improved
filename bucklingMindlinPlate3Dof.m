@@ -9,7 +9,7 @@ function bucklingMindlinPlate3Dof
 % shape functions and jacobian matrix
 
 % ......................
-clear all
+clearvars
 colordef white
 
 % material properties

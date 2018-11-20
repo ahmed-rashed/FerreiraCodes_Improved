@@ -1,4 +1,4 @@
-clear all;
+clearvars;
 % 
 E0  = 10e6;  % m—dulo E
 nu0 = 0.333;  % Poisson

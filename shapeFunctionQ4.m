@@ -1,5 +1,4 @@
-% .............................................................     
-    function [shape,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+function [shape,naturalDerivatives]=shapeFunctionQ4(xi,eta)
 
     % shape function and derivatives for Q4 elements
     % shape : Shape functions
@@ -12,5 +11,4 @@
            1/4*[-(1-eta), -(1-xi);1-eta,    -(1+xi);
 		         1+eta,      1+xi;-(1+eta),   1-xi];
 
-    end % end function shapeFunctionQ4
-  
+end % end function shapeFunctionQ4

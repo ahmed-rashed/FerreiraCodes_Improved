@@ -5,7 +5,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all
+clearvars
 
 % E; modulus of elasticity
 % A: area of cross section

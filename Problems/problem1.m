@@ -5,7 +5,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all
+clearvars
 
 % elementNodes: connections at elements
 elementNodes=[1 2;2 3;2 4];

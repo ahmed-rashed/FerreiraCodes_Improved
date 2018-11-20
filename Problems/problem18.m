@@ -6,7 +6,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all;colordef white;clf
+clearvars;colordef white;clf
 
 % materials
 E  = 10e7;     poisson = 0.30; 

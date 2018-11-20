@@ -6,7 +6,7 @@
 % antonio ferreira 2008
 
 % clear memory
-clear all
+clearvars
 
 % E; modulus of elasticity
 % I: second moment of area

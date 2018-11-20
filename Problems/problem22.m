@@ -8,7 +8,7 @@
 
 function problem22
 
-clear all
+clearvars
 colordef white
 
 % L: side lenght
