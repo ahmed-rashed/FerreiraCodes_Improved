@@ -55,18 +55,18 @@ GDof=3*numberNodes;
     EssentialBC('ssss',GDof,xx,yy,nodeCoordinates,numberNodes);
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% displacements
+% D_col
 disp('Displacements')
 jj=1:GDof; format
-f=[jj; displacements'];
+f=[jj; D_col'];
 fprintf('node U\n')
 fprintf('%3d %12.8f\n',f)
 
 % deformed shape
 figure
-plot3(xx,yy,displacements(1:numberNodes),'.')
+plot3(xx,yy,D_col(1:numberNodes),'.')
 format long
 D1=E*thickness^3/12/(1-poisson^2);
-min(displacements(1:numberNodes))*D1/L^4
+min(D_col(1:numberNodes))*D1/L^4

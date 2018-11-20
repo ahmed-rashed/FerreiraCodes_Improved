@@ -53,10 +53,10 @@ fixedNodeTX=fixedNodeW;
 prescribedDof=[fixedNodeW; fixedNodeTX+numberNodes];
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     GDof,prescribedDof)
 
 % free vibration problem

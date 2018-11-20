@@ -23,7 +23,7 @@ numberNodes=size(nodeCoordinates,1);
 xx=nodeCoordinates(:,1);
 yy=nodeCoordinates(:,2);
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
     % GDof: global number of degrees of freedom
@@ -68,13 +68,13 @@ end
 prescribedDof=[1 7 8 14 15 21];
 activeDof=setdiff([1:GDof]', [prescribedDof]);
 U=stiffness(activeDof,activeDof)\force(activeDof);
-displacements=zeros(GDof,1);
-displacements(activeDof)=U;
-% displacements
+D_col=zeros(GDof,1);
+D_col(activeDof)=U;
+% D_col
 disp('Displacements')
 jj=1:GDof; format
-[jj' displacements]
-U=displacements;   
+[jj' D_col]
+U=D_col;   
 clf
 %drawing mesh and deformed shape
 drawingMesh(nodeCoordinates+500*[U(1:numberNodes)...

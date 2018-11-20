@@ -37,13 +37,13 @@ stiffness=formStiffnessGrid(GDof,numberElements,...
 prescribedDof=[4:12]';
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force)
+D_col=solution(GDof,prescribedDof,stiffness,force)
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     GDof,prescribedDof)
 
 % % forces in elements
 disp('forces in elements ')
 EF=forcesInElementGrid(numberElements,elementNodes,...
-    xx,yy,E,I,G,J,displacements)
+    xx,yy,E,I,G,J,D_col)

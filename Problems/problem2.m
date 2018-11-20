@@ -27,10 +27,10 @@ elementNodes(:,1)=ii;
 elementNodes(:,2)=ii+1;
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
-displacements=zeros(numberNodes,1);
+D_col=zeros(numberNodes,1);
 force=zeros(numberNodes,1);
 stiffness=zeros(numberNodes,numberNodes); 
 % applied load at node 2
@@ -65,8 +65,8 @@ activeDof=setdiff([1:numberNodes]',[prescribedDof]);
 
 % solution
 GDof=numberNodes;
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     numberNodes,prescribedDof)

@@ -1,22 +1,19 @@
-function  k_local=k_local_3D_Frame(nodeCoordinates,iNodes,E,A,Iz,Iy,G,J)
+function  k_local=k_local_3D_Frame(L,E,A,Iz,Iy,G,J)
+a=[E*A/L 0 0
+    0 12*E*Iz/L^3 0
+    0 0 12*E*Iy/L^3];
 
-L=norm(nodeCoordinates(iNodes(2),:)-nodeCoordinates(iNodes(1),:));
+b=[ 0 0 0
+    0 0 6*E*Iz/L^2
+    0 -6*E*Iy/L^2 0];
 
-k1 = E*A/L;
-k2 = 12*E*Iz/(L^3);
-k3 = 6*E*Iz/(L^2);
-k4 = 4*E*Iz/L;
-k5 = 2*E*Iz/L;
-k6 = 12*E*Iy/(L^3);
-k7 = 6*E*Iy/(L^2);
-k8 = 4*E*Iy/L;
-k9 = 2*E*Iy/L;
-k10 = G*J/L;
+c=[G*J/L 0 0
+    0 4*E*Iy/L 0
+    0 0 4*E*Iz/L];
 
-a=[k1 0 0; 0 k2 0; 0 0 k6];
-b=[ 0 0 0;0 0 k3; 0 -k7 0];
-c=[k10 0 0;0 k8 0; 0 0 k4];
-d=[-k10 0 0;0 k9 0;0 0 k5];
+d=[-G*J/L 0 0
+    0 2*E*Iy/L 0
+    0 0 2*E*Iz/L];
 
 k_local=[a b -a b;
         b.' c b d;

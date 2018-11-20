@@ -1,39 +1,35 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem16.m
 % Timoshenko beam in bending
 % antonio ferreira 2008
+%Modified by Ahmed Rashed
 
-% clear memory
 clearvars
 
-% E; modulus of elasticity
-% G; shear modulus
-% I: second moments of area
-% L: length of beam
-% thickness: thickness of beam
-E=10e7; poisson = 0.30;L  = 1;thickness=0.001;
+E=10e7;
+poisson = 0.30;
+L  = 1;
+thickness=0.001;
 I=thickness^3/12;
-EI=E*I;
 kapa=5/6;
-% 
+ 
 
-P = -1; % uniform pressure
+P=-1; % uniform distribute load
+
 % constitutive matrix
 G=E/2/(1+poisson);
-C=[   EI   0; 0    kapa*thickness*G];
+C=[E*I   0;
+    0    kapa*thickness*G];
 
 % mesh
-numberElements     = 100;  
-nodeCoordinates=linspace(0,L,numberElements+1);
-xx=nodeCoordinates';
-for i=1:size(nodeCoordinates,2)-1
-    elementNodes(i,1)=i; 
-    elementNodes(i,2)=i+1;
-end
+numberNodes=101;
+xx=linspace(0,L,numberNodes).';
+
+numberElements=numberNodes-1;
+elementNodes=nan(numberElements,2);
+elementNodes(:,1)=1:numberElements;
+elementNodes(:,2)=2:numberElements+1;
+
 % generation of coordinates and connectivities
-numberNodes=size(xx,1);
+
 
 % GDof: global number of degrees of freedom
 GDof=2*numberNodes; 
@@ -55,13 +51,13 @@ fixedNodeTX=[1];;
 prescribedDof=[fixedNodeW; fixedNodeTX+numberNodes];
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     GDof,prescribedDof)
 
-U=displacements;
+U=D_col;
 ws=1:numberNodes;
 
 % max displacement

@@ -1,9 +1,4 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem6.m
-% ref: D. Logan, A first couse in the finite element method,
-% third Edition, mixing trusses with springs
+% ref: D. Logan, A first couse in the finite element method,third Edition, mixing trusses with springs
 % antonio ferreira 2008
 
 % clear memory
@@ -23,16 +18,16 @@ xx=nodeCoordinates(:,1);
 yy=nodeCoordinates(:,2);
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
 GDof=2*numberNodes;
 U=zeros(GDof,1);
-force=zeros(GDof,1);
+F_col=zeros(GDof,1);
 stiffness=zeros(GDof); 
 
 % applied load at node 2
-force(2)=-25000;
+F_col(2)=-25000;
 
 % computation of the system stiffness matrix
 for e=1:numberElements-1; 
@@ -57,10 +52,10 @@ stiffness([2 7],[2 7])= stiffness([2 7],[2 7])+2000*[1 -1;-1 1];
 prescribedDof=[3:8]';
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,F_col);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     GDof,prescribedDof)
 
 % stresses at elements
@@ -73,7 +68,7 @@ for e=1:numberElements-1
   C=xa/length_element;
   S=ya/length_element;   
   sigma(e)=E/length_element* ...
-      [-C  -S C S]*displacements(elementDof); 
+      [-C  -S C S]*D_col(elementDof); 
 end    
 disp('stresses')
 sigma'

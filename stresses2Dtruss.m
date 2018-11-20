@@ -1,4 +1,4 @@
-function sigma=stresses2Dtruss(numberElements,elementNodes,nodeCoordinates,displacements,E_vec)
+function sigma=stresses2Dtruss(numberElements,elementNodes,nodeCoordinates,D_col,E_vec)
 
 sigma=nan(numberElements,1);
 for e=1:numberElements
@@ -9,5 +9,5 @@ for e=1:numberElements
   L=sqrt(xa*xa+ya*ya);
   C=xa/L;
   S=ya/L;   
-  sigma(e)=E_vec(e)/L*[-C  -S C S]*displacements(elementDof); 
+  sigma(e)=E_vec(e)/L*[-C  -S C S]*D_col(elementDof); 
 end

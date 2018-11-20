@@ -23,10 +23,10 @@ nodeCoordinates=[0 2000 4000 4000];
 xx=nodeCoordinates;
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
-displacements=zeros(numberNodes,1);
+D_col=zeros(numberNodes,1);
 force=zeros(numberNodes,1);
 stiffness=zeros(numberNodes,numberNodes); 
 
@@ -64,8 +64,8 @@ prescribedDof=[1;4];
 GDof=4;
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     numberNodes,prescribedDof)

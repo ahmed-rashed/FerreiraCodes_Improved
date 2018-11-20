@@ -7,7 +7,7 @@ for iElement=1:numberElements
       
     L=norm(nodeCoordinates(iNodes(2),:)-nodeCoordinates(iNodes(1),:));
     k_local=k_local_3D_Frame(L,E_vec(iElement),A_vec(iElement),Iz_vec(iElement),Iy_vec(iElement),G_vec(iElement),J_vec(iElement));
-    k_global=k_global_3D_Frame(iNodes,nodeCoordinates,k_local);
+    k_global=k_global_3D_Frame(nodeCoordinates,iNodes,k_local);
 
     elementDof=[6*iNodes(1)+(-5:0),6*iNodes(2)+(-5:0)];
     K(elementDof,elementDof)=K(elementDof,elementDof)+k_global;

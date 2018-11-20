@@ -29,7 +29,7 @@ xx=nodeCoordinates(:,1);
 yy=nodeCoordinates(:,2);
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
     % GDof: global number of degrees of freedom
@@ -51,14 +51,14 @@ force(31)=10e6;
 prescribedDof=[1 13 14 26 27 39]';
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col,stiffness,...
     GDof,prescribedDof)
 
 %drawing mesh and deformed shape
-U=displacements;   
+U=D_col;   
 clf
 drawingMesh(nodeCoordinates+500*[U(1:numberNodes)...
     U(numberNodes+1:2*numberNodes)],elementNodes,'L2','k.-');

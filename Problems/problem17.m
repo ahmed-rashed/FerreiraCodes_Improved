@@ -50,16 +50,16 @@ force(rightBord(1))=P*Ly/numberElementsY/2;
 force(rightBord(end))=P*Ly/numberElementsY/2;
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,stiffness,force);
 
-% displacements
+% D_col
 disp('Displacements')
 jj=1:GDof; format
-f=[jj; displacements'];
+f=[jj; D_col'];
 fprintf('node U\n')
 fprintf('%3d %12.8f\n',f)
-UX=displacements(1:numberNodes);
-UY=displacements(numberNodes+1:GDof);
+UX=D_col(1:numberNodes);
+UY=D_col(numberNodes+1:GDof);
 scaleFactor=10;
 
 % deformed shape
@@ -76,4 +76,4 @@ axis off
 
 % stresses at nodes
 stresses2D(GDof,numberElements,elementNodes,numberNodes,...
-    nodeCoordinates,displacements,UX,UY,C,scaleFactor)
+    nodeCoordinates,D_col,UX,UY,C,scaleFactor)

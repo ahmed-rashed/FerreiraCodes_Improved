@@ -1,63 +1,44 @@
-%................................................................
-
 % MATLAB codes for Finite Element Analysis
-% problem11.m
-% 2D frame
 % antonio ferreira 2008
+%Modified by Ahmed Rashed
+%This corrects the strange node ordering of Ferreira's book
 
-% clear memory
-clearvars
+close all
 
-% E; modulus of elasticity
-% I: second moment of area
-% L: length of bar
-E=210000; A=200; I=2e8; EA=E*A; EI=E*I;
+E_vec=210000*[1,1,1];
+A_vec=200*[1,1,1];
+I_vec=2e8*[1,1,1];
 
 % generation of coordinates and connectivities
-numberElements=3;
-nodeCoordinates=[0 0;0 6000;6000 6000;6000 0];
-xx=nodeCoordinates;
-for i=1:numberElements; 
-    elementNodes(i,1)=i; 
-    elementNodes(i,2)=i+1;
-end
-numberNodes=size(nodeCoordinates,1);
-xx=nodeCoordinates(:,1);
-yy=nodeCoordinates(:,2);
+nodeCoordinates=[   0 0
+                    0 6000
+                    6000 6000
+                    6000 0];
 
-% for structure:
-    % displacements: displacement vector
-    % force : force vector
-    % stiffness: stiffness matrix
-    % GDof: global number of degrees of freedom
+elementNodes=[1 2;
+              2 3;
+              3 4];
+numberNodes=size(nodeCoordinates,1);
+
+% GDof: global number of degrees of freedom
 GDof=3*numberNodes; 
-U=zeros(GDof,1);
-force=zeros(GDof,1);
+
+% Assembly stiffness matrix
+K_Assembly=formStiffness2Dframe(GDof,size(elementNodes,1),elementNodes,nodeCoordinates,E_vec,I_vec,A_vec);
 
 %force vector
-force(2)=15000;
-force(10)=10e6;
+F_col=nan(GDof,1);
+F_col(4)=15000;
+F_col(5)=0;
+F_col(6)=10e6;
+F_col(7)=0;
+F_col(8)=0;
+F_col(9)=0;
 
-% stiffness matrix
-[stiffness]=...
-    formStiffness2Dframe(GDof,numberElements,...
-    elementNodes,numberNodes,xx,yy,EI,EA);
-
-% boundary conditions and solution
-prescribedDof=[1 4 5 8 9 12]';
+%displacement vector
+prescribedDof=[1 2 3 10 11 12];
+D_col=nan(GDof,1);
+D_col(prescribedDof)=0;
 
 % solution
-displacements=solution(GDof,prescribedDof,stiffness,force);
-
-% output displacements/reactions
-outputDisplacementsReactions(displacements,stiffness,...
-    GDof,prescribedDof)
-
-%drawing mesh and deformed shape
-clf
-U=displacements;
-drawingMesh(nodeCoordinates+500*[U(1:numberNodes)...
-    U(numberNodes+1:2*numberNodes)],elementNodes,'L2','k.-');
-drawingMesh(nodeCoordinates,elementNodes,'L2','k--');
-
-
+[D_col,F_col]=solution(prescribedDof,K_Assembly,D_col,F_col);

@@ -1,6 +1,6 @@
 function stresses2D(GDof,numberElements,...
     elementNodes,numberNodes,nodeCoordinates,...
-    displacements,UX,UY,C,scaleFactor)
+    D_col,UX,UY,C,scaleFactor)
 
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
@@ -34,7 +34,7 @@ for e=1:numberElements
     B(3,nn+1:2*nn)  = XYderivatives(:,1)';
     
 % element deformation 
-    strain=B*displacements(elementDof);
+    strain=B*D_col(elementDof);
     stress(e,q,:)=C*strain;    
   end                               
 end   

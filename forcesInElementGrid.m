@@ -1,7 +1,7 @@
 %................................................................
 
 function EF=forcesInElementGrid(numberElements,...
-    elementNodes,xx,yy,E,I,G,J,displacements)
+    elementNodes,xx,yy,E,I,G,J,D_col)
 
 % forces in elements
 EF=zeros(6,numberElements);
@@ -34,5 +34,5 @@ a=[1 0 0; 0 C S;0 -S C];
 R=[a zeros(3);zeros(3) a];
 
 % forces in element
-EF (:,e)= k*R* displacements(elementDof);
+EF (:,e)= k*R* D_col(elementDof);
 end 

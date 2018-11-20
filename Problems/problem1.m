@@ -17,10 +17,10 @@ numberElements=size(elementNodes,1);
 numberNodes=4;
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
-displacements=zeros(numberNodes,1);
+D_col=zeros(numberNodes,1);
 force=zeros(numberNodes,1);
 stiffness=zeros(numberNodes); 
 
@@ -42,12 +42,12 @@ prescribedDof=[1;3;4];
 activeDof=setdiff([1:numberNodes]',[prescribedDof]);
 
 % solution
-displacements=stiffness(activeDof,activeDof)\force(activeDof);
+D_col=stiffness(activeDof,activeDof)\force(activeDof);
 
-% positioning all displacements
-displacements1=zeros(numberNodes,1);
-displacements1(activeDof)=displacements;
+% positioning all D_col
+D_col1=zeros(numberNodes,1);
+D_col1(activeDof)=D_col;
 
-% output displacements/reactions
-outputDisplacementsReactions(displacements1,stiffness,...
+% output D_col/reactions
+outputDisplacementsReactions(D_col1,stiffness,...
     numberNodes,prescribedDof)

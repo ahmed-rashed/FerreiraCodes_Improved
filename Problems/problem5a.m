@@ -20,15 +20,15 @@ numberNodes=size(nodeCoordinates,1);
 xx=nodeCoordinates(:,1);
 yy=nodeCoordinates(:,2);
 % for structure:
-    % displacements: displacement vector
-    % force : force vector
+    % D_col: displacement vector
+    % F_col : F_col vector
     % stiffness: stiffness matrix
 U=zeros(2*numberNodes,1);
-force=zeros(2*numberNodes,1);
+F_col=zeros(2*numberNodes,1);
 stiffness=zeros(2*numberNodes,2*numberNodes); 
 % applied load at node 2
-force(4)=-50000;
-force(8)=-50000;
+F_col(4)=-50000;
+F_col(8)=-50000;
 % calculation of the system stiffness matrix
 for e=1:numberElements; 
   % elementDof: element degrees of freedom (Dof)
@@ -49,23 +49,23 @@ end
 prescribedDof=[1 2 5 7]';
 activeDof=setdiff([1:2*numberNodes]', ...
     [prescribedDof]);
-U=stiffness(activeDof,activeDof)\force(activeDof);
-displacements=zeros(2*numberNodes,1);
-displacements(activeDof)=U;
+U=stiffness(activeDof,activeDof)\F_col(activeDof);
+D_col=zeros(2*numberNodes,1);
+D_col(activeDof)=U;
 us=1:2:2*numberNodes-1;
 vs=2:2:2*numberNodes;
-% displacements
+% D_col
 disp('Displacements')
 jj=1:2*numberNodes; format
-[jj' displacements]
+[jj' D_col]
 
-% drawing displacements
+% drawing D_col
 
 format long
 figure
 L=xx(2)-xx(1);
 %L=node(2,1)-node(1,1);
-XX=displacements(us);YY=displacements(vs);
+XX=D_col(us);YY=D_col(vs);
 dispNorm=max(sqrt(XX.^2+YY.^2));
 scaleFact=2*dispNorm;
 clf
@@ -74,7 +74,7 @@ drawingMesh(nodeCoordinates+scaleFact*[XX YY],elementNodes,'L2','k.-');
 drawingMesh(nodeCoordinates,elementNodes,'L2','k.--');
 
 % reactions
-F=stiffness*displacements;
+F=stiffness*D_col;
 reactions=F(prescribedDof);
 disp('reactions');format
 [prescribedDof reactions]
@@ -89,7 +89,7 @@ for e=1:numberElements
   C=xa/length_element;
   S=ya/length_element;   
   sigma(e)=E/length_element* ...
-      [-C  -S C S]*displacements(elementDof); 
+      [-C  -S C S]*D_col(elementDof); 
 end    
 disp('stresses')
 sigma'

@@ -27,7 +27,7 @@ xx=nodeCoordinates(:,1);
 P=-1000;  
 
 % for structure:
-    % displacements: displacement vector
+    % D_col: displacement vector
     % force : force vector
     % stiffness: stiffness matrix
     % GDof: global number of degrees of freedom
@@ -52,16 +52,16 @@ fixedNodeU =[1]'; fixedNodeV =[2]';
 prescribedDof=[fixedNodeU;fixedNodeV;GDof+1];
 
 % solution
-displacements=solution(GDof+1,prescribedDof,...
+D_col=solution(GDof+1,prescribedDof,...
     stiffnessSpring,forceSpring);
 
-% displacements
+% D_col
 disp('Displacements')
 jj=1:GDof+1; format
-[jj' displacements]
+[jj' D_col]
 
 % drawing deformed shape
-U=displacements(1:2:2*numberNodes);   
+U=D_col(1:2:2*numberNodes);   
 plot(nodeCoordinates,U,'*')
 
 % exact solution by Bathe (Solutions Manual of Procedures ...)

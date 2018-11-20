@@ -1,11 +1,15 @@
-function [displacements,force]=solution(prescribedDof,K,displacements,force)
+function [D_vec,F_vec]=solution(prescribedDof,K,D_vec,F_vec,F_eq_vec)
+if nargin<5
+    F_eq_vec=zeros(size(F_vec));
+end
 
-GDof=length(displacements);
+GDof=length(D_vec);
 
 freeDof=setdiff(1:GDof,prescribedDof);
 
-displacements(freeDof)=K(freeDof,freeDof)\force(freeDof);
+D_vec(freeDof)=K(freeDof,freeDof)\(F_vec(freeDof)+F_eq_vec(freeDof));
 
-nonZeroDof=find(displacements~=0);
+%nonZeroDof=find(D_vec~=0);
+nonZeroDof=union(freeDof,prescribedDof(D_vec(prescribedDof)~=0));
 
-force(prescribedDof)=K(prescribedDof,nonZeroDof)*displacements(nonZeroDof);
+F_vec(prescribedDof)=K(prescribedDof,nonZeroDof)*D_vec(nonZeroDof)-F_eq_vec(prescribedDof);
