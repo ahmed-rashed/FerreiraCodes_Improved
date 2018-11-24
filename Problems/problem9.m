@@ -11,10 +11,10 @@ I=1;
 
 % generation of coordinates and connectivities
 L=1;
-N_Nodes=81;
-x_col=linspace(0,L,N_Nodes).';
+N_nodes=81;
+x_col=linspace(0,L,N_nodes).';
 
-N_elements=N_Nodes-1;
+N_elements=N_nodes-1;
 elementNodes=[(1:N_elements).',(2:N_elements+1).'];
 
 % distributed load
@@ -22,15 +22,10 @@ P=-1;
 % P=0;
 
 % GDof: global number of degrees of freedom
-GDof=2*N_Nodes;
+GDof=2*N_nodes;
 
 % stiffess matrix and force vector
-[K_Assembly,F_equiv]=formStiffnessBernoulliBeam(GDof,N_elements,elementNodes,x_col,E,I,P);
-
-%force vector
-F_col=nan(GDof,1);
-F_col(3:end-2)=0;
-% F_col(39*2+1)=-1;
+[K_Assembly,F_equiv]=formStiffnessBernoulliBeam(GDof,elementNodes,x_col,E,I,P);
 
 % boundary conditions
 prescribedDof={ [1 2 GDof-1 GDof]     % clamped-clamped
@@ -42,8 +37,10 @@ F_cols=nan(GDof,N_problems);
 for ii=1:N_problems
     %displacement vector
     D_cols(prescribedDof{ii},ii)=0;
-    F_cols(:,ii)=F_col;
-    F_cols(setdiff(prescribedDof{1},prescribedDof{ii}),ii)=0;
+
+    %force vector
+    freeDOF=setdiff(1:GDof,prescribedDof{ii});
+    F_cols(freeDOF,ii)=0;
 
     % solution
     [D_cols(:,ii),F_cols(:,ii)]=solution(prescribedDof{ii},K_Assembly,D_cols(:,ii),F_cols(:,ii),F_equiv);

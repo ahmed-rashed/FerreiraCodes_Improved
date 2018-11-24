@@ -1,52 +1,39 @@
-function [stiffness,mass]=formStiffness2D(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,C,rho,thickness)
+function [K_Assembly,M_Assembly]=formStiffness2D(GDof,numberElements,elementNodes,nodeCoordinates,C,rho,h)
 
-% compute stiffness matrix (and mass matrix)
-% for plane stress Q4 elements
+% compute stiffness matrix (and mass matrix) for plane stress Q4 elements
 
-stiffness=zeros(GDof);
-mass=zeros(GDof);
+K_Assembly=zeros(GDof,GDof);
+M_Assembly=zeros(GDof,GDof);
 
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
-for e=1:numberElements
-  indice=elementNodes(e,:); 
-  elementDof=[ indice indice+numberNodes ];   
-  ndof=length(indice);
-  
-  % cycle for Gauss point
-  for q=1:size(gaussWeights,1)
-    GaussPoint=gaussLocations(q,:);
-    xi=GaussPoint(1);
-    eta=GaussPoint(2);
+N_nodes=size(elementNodes,2);
+for iElement=1:numberElements
+    i_nodes=elementNodes(iElement,:); 
+    elementDof=[i_nodes i_nodes+N_nodes];
 
-% shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+    % cycle for Gauss point
+    for q=1:size(gaussWeights,1)
+        xi=gaussLocations(q,1);
+        eta=gaussLocations(q,2);
 
-% Jacobian matrix, inverse of Jacobian, 
-% derivatives w.r.t. x,y    
-    [Jacob,invJacobian,XYderivatives]=...
-        Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+        % shape functions and derivatives
+        [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
 
-%  B matrix
-    B=zeros(3,2*ndof);
-    B(1,1:ndof)       = XYderivatives(:,1)';
-    B(2,ndof+1:2*ndof)  = XYderivatives(:,2)';
-    B(3,1:ndof)       = XYderivatives(:,2)';
-    B(3,ndof+1:2*ndof)  = XYderivatives(:,1)';
-    
-% stiffness matrix
-    stiffness(elementDof,elementDof)=...
-        stiffness(elementDof,elementDof)+...
-        B'*C*thickness*B*gaussWeights(q)*det(Jacob);
-% mass matrix
-    mass(indice,indice)=mass(indice,indice)+...
-        shapeFunction*shapeFunction'*...
-        rho*thickness*gaussWeights(q)*det(Jacob);
-    mass(indice+numberNodes,indice+numberNodes)=...
-        mass(indice+numberNodes,indice+numberNodes)+...
-        shapeFunction*shapeFunction'*...
-        rho*thickness*gaussWeights(q)*det(Jacob);
+        % Jacobian matrix, inverse of Jacobian, derivatives w.r.t. x,y    
+        [Jacob,invJacobian,XYderivatives]=Jacobian(nodeCoordinates(i_nodes,:),naturalDerivatives);
 
-  end
+        %  B matrix
+        B=zeros(3,2*N_nodes);
+        B(1,1:N_nodes)           = XYderivatives(:,1).';
+        B(2,N_nodes+1:2*N_nodes) = XYderivatives(:,2).';
+        B(3,1:N_nodes)           = XYderivatives(:,2).';
+        B(3,N_nodes+1:2*N_nodes) = XYderivatives(:,1).';
+
+        K_Assembly(elementDof,elementDof)=K_Assembly(elementDof,elementDof)+B.'*C*h*B*gaussWeights(q)*det(Jacob);
+
+        M_Assembly(i_nodes,i_nodes)=M_Assembly(i_nodes,i_nodes)+shapeFunction*shapeFunction.'*rho*h*gaussWeights(q)*det(Jacob);
+        M_Assembly(i_nodes+N_nodes,i_nodes+N_nodes)=M_Assembly(i_nodes+N_nodes,i_nodes+N_nodes)+shapeFunction*shapeFunction.'*rho*h*gaussWeights(q)*det(Jacob);
+    end
 end

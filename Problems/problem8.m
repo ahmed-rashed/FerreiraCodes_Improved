@@ -35,7 +35,7 @@ K_assembly=formStiffness3Dtruss(GDof,numberElements,elementNodes,nodesCoords,E_v
 % boundary conditions
 prescribedDof=[4:15];
 
-% force : force vector
+%force vector
 F_col=nan(GDof,1);
 F_col([1,3])=0;
 F_col(2)=-10000;

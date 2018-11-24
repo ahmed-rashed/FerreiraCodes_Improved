@@ -38,19 +38,18 @@ numberNodes=size(xx,1);
 GDof=2*numberNodes; 
 
 % calculation of the system stiffness matrix
-[stiffness,mass]=formStiffness2D(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C,rho,thickness);
+[K_Assembly,M_Assembly]=formStiffness2D(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,C,rho,thickness);
 
 % boundary conditions 
 fixedNodeX=find(nodeCoordinates(:,1)==0);  % fixed in XX
 fixedNodeY=find(nodeCoordinates(:,1)==0);  % fixed in YY
 prescribedDof=[fixedNodeX; fixedNodeY+numberNodes];
-    activeDof=setdiff([1:GDof]',prescribedDof);
+activeDof=setdiff(1:GDof,prescribedDof);
 
-    % perform eigenproblem
-    [V1,D1] = eig(stiffness(activeDof,activeDof),mass(activeDof,activeDof)); 
-    D1 = diag(sqrt(D1)*L*L*sqrt(rho*A/E/I));
-    % drawing eigenmodes
-    numberOfModes=4;
-    % sort out eigenvalues
-    [D1,ii] = sort(D1); ii = ii(1:numberOfModes); VV = V1(:,ii);
+% perform eigenproblem
+[V1,D1] = eig(K_Assembly(activeDof,activeDof),M_Assembly(activeDof,activeDof)); 
+D1 = diag(sqrt(D1)*L*L*sqrt(rho*A/E/I));
+% drawing eigenmodes
+numberOfModes=4;
+% sort out eigenvalues
+[D1,ii] = sort(D1); ii = ii(1:numberOfModes); VV = V1(:,ii);

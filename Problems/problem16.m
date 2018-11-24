@@ -5,62 +5,69 @@
 clearvars
 
 E=10e7;
-poisson = 0.30;
-L  = 1;
-thickness=0.001;
-I=thickness^3/12;
-kapa=5/6;
- 
+nu=0.3;
+rho=1;
 
-P=-1; % uniform distribute load
+L=1;
+b=1;
+h=0.001;
+I=b*h^3/12;
+kapa=5/6;
 
 % constitutive matrix
-G=E/2/(1+poisson);
+G=E/2/(1+nu);
 C=[E*I   0;
-    0    kapa*thickness*G];
+    0    kapa*h*G];
 
 % mesh
-numberNodes=101;
-xx=linspace(0,L,numberNodes).';
+N_nodes=101;
+x_col=linspace(0,L,N_nodes).';
 
-numberElements=numberNodes-1;
-elementNodes=nan(numberElements,2);
-elementNodes(:,1)=1:numberElements;
-elementNodes(:,2)=2:numberElements+1;
+N_elements=N_nodes-1;
+elementNodes=nan(N_elements,2);
+elementNodes(:,1)=1:N_elements;
+elementNodes(:,2)=2:N_elements+1;
 
-% generation of coordinates and connectivities
-
+% distributed load
+P=-1;
 
 % GDof: global number of degrees of freedom
-GDof=2*numberNodes; 
+GDof=2*N_nodes; 
 
 % computation of the system stiffness matrix 
-[stiffness,force]=...
-    formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
-    elementNodes,numberNodes,xx,C,P,1,I,thickness);
+[K_Assembly,F_equiv]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,N_nodes,x_col,C,P,rho,I,h);
 
-% boundary conditions (simply-supported at both bords)
-%fixedNodeW =[1 ; numberNodes];
-%fixedNodeTX=[]; 
-% boundary conditions (clamped at both bords)
-fixedNodeW =[1 ; numberNodes];
-fixedNodeTX=fixedNodeW; 
-% boundary conditions (cantilever)
-fixedNodeW =[1];
-fixedNodeTX=[1];; 
-prescribedDof=[fixedNodeW; fixedNodeTX+numberNodes];
+%force vector
+F_col=nan(GDof,1);
+F_col(2:N_nodes-1)=0;
 
-% solution
-D_col=solution(GDof,prescribedDof,stiffness,force);
+% boundary conditions
+prescribedDof={ [1 N_nodes N_nodes+[1 N_nodes]]     % clamped-clamped
+                [1 N_nodes]            % simply supported-simply supported
+                [1 N_nodes+1]};               % clamped at x=0
+N_problems=length(prescribedDof);
+D_cols=nan(GDof,N_problems);
+F_cols=nan(GDof,N_problems);
+for ii=1:N_problems
+    %displacement vector
+    D_cols(prescribedDof{ii},ii)=0;
 
-% output D_col/reactions
-outputDisplacementsReactions(D_col,stiffness,...
-    GDof,prescribedDof)
+    %force vector
+    freeDOF=setdiff(1:GDof,prescribedDof{ii});
+    F_cols(freeDOF,ii)=0;
 
-U=D_col;
-ws=1:numberNodes;
+    % solution
+    [D_cols(:,ii),F_cols(:,ii)]=solution(prescribedDof{ii},K_Assembly,D_cols(:,ii),F_cols(:,ii),F_equiv);
+    
+    % max displacement
+    disp(' max displacement')
+    min(D_cols(1:N_nodes,ii))
+end
 
-% max displacement
-disp(' max displacement')
-min(U(ws))
+% % output D_col/reactions
+% outputDisplacementsReactions(D_col,K_Assembly,GDof,prescribedDof)
 
+% drawing deformed shape
+subplot(2,1,1)
+plot(x_col,D_cols(1:N_nodes,:))
+legend({'C-C','S-S','C-F'})

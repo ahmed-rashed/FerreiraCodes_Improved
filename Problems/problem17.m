@@ -1,79 +1,84 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem17.m
 % 2D problem: thin plate in tension
 % antonio ferreira 2008
+%Modified by Ahmed Rashed
 
-% clear memory
-clearvars;colordef white;clf
+clearvars;
+close all
 
 % materials
-E  = 10e7;     poisson = 0.30;  
+E=10e7;
+nu=0.30;  
 
-% matriz C
-C=E/(1-poisson^2)*[1 poisson 0;poisson 1 0;0 0 (1-poisson)/2];
+C=E/(1-nu^2)*[  1 nu 0
+                nu 1 0
+                0 0 (1-nu)/2];
 
 % load
 P = 1e6;
 
 %Mesh generation
-Lx=5;
-Ly=1;
-numberElementsX=20;
-numberElementsY=10;
-numberElements=numberElementsX*numberElementsY;
-[nodeCoordinates, elementNodes] = ...
-    rectangularMesh(Lx,Ly,numberElementsX,numberElementsY);
-xx=nodeCoordinates(:,1);
-yy=nodeCoordinates(:,2);
+L_x=5;
+L_y=1;
+N_elements_X=20;
+N_elements_Y=10;
+N_elements=N_elements_X*N_elements_Y;
+[nodeCoordinates, elementNodes]=rectangularMesh(L_x,L_y,N_elements_X,N_elements_Y);
 drawingMesh(nodeCoordinates,elementNodes,'Q4','k-');
-numberNodes=size(xx,1);
+N_nodes=size(nodeCoordinates,1);
 
 % GDof: global number of degrees of freedom
-GDof=2*numberNodes; 
+GDof=2*N_nodes; 
 
 % calculation of the system stiffness matrix
-stiffness=formStiffness2D(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C,1,1);
+[K_Assembly,M_Assembly]=formStiffness2D(GDof,N_elements,elementNodes,nodeCoordinates,C,1,1);
 
 % boundary conditions 
 fixedNodeX=find(nodeCoordinates(:,1)==0);  % fixed in XX
 fixedNodeY=find(nodeCoordinates(:,2)==0);  % fixed in YY
-prescribedDof=[fixedNodeX; fixedNodeY+numberNodes];
+prescribedDof=[ fixedNodeX
+                fixedNodeY+N_nodes];
 
-% force vector (distributed load applied at xx=Lx)
+% force vector (distributed load applied at xx=L_x)
 force=zeros(GDof,1);
-rightBord=find(nodeCoordinates(:,1)==Lx);
-force(rightBord)=P*Ly/numberElementsY;
-force(rightBord(1))=P*Ly/numberElementsY/2;
-force(rightBord(end))=P*Ly/numberElementsY/2;
+rightBord=find(nodeCoordinates(:,1)==L_x);
+force(rightBord)   =P*L_y/N_elements_Y;
+force(rightBord(1))=force(rightBord(1))/2;
+force(rightBord(end))=force(rightBord(end))/2;
 
 % solution
-D_col=solution(GDof,prescribedDof,stiffness,force);
+D_col=solution(GDof,prescribedDof,K_Assembly,force);
 
-% D_col
-disp('Displacements')
-jj=1:GDof; format
-f=[jj; D_col'];
-fprintf('node U\n')
-fprintf('%3d %12.8f\n',f)
-UX=D_col(1:numberNodes);
-UY=D_col(numberNodes+1:GDof);
-scaleFactor=10;
+%Normal Modes Analysis
+activeDof=setdiff(1:GDof,prescribedDof);
 
-% deformed shape
-figure
-drawingField(nodeCoordinates+scaleFactor*[UX UY],...
-    elementNodes,'Q4',UX);%U XX
-hold on
-drawingMesh(nodeCoordinates+scaleFactor*[UX UY],...
-    elementNodes,'Q4','k-');
-drawingMesh(nodeCoordinates,elementNodes,'Q4','k--');
-colorbar
-title('U XX  (on deformed shape)')
-axis off
+[modeShapes,lambda]=eig(K_Assembly(activeDof,activeDof),M_Assembly(activeDof,activeDof)); 
+w_n=sqrt(lambda);
+
+% sort out eigenvalues
+[w_n,ii]=sort(w_n);
+modeShapes=modeShapes(:,ii);
+
+% % drawing eigenmodes
+% N_modes=4;
+
+% % D_col
+% disp('Displacements')
+% f=[1:GDof; D_col.'];
+% fprintf('node U\n')
+% fprintf('%3d %12.8f\n',f)
+% UX=D_col(1:N_nodes);
+% UY=D_col(N_nodes+1:GDof);
+% scaleFactor=10;
+% 
+% % deformed shape
+% figure
+% drawingField(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4',UX);%U XX
+% hold on
+% drawingMesh(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4','k-');
+% drawingMesh(nodeCoordinates,elementNodes,'Q4','k--');
+% colorbar
+% title('U XX  (on deformed shape)')
+% axis off
 
 % stresses at nodes
-stresses2D(GDof,numberElements,elementNodes,numberNodes,...
-    nodeCoordinates,D_col,UX,UY,C,scaleFactor)
+stresses=stresses2D(N_elements,elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)

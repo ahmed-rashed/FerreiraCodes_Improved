@@ -1,12 +1,14 @@
-function  [K_asembly_local,F_equivalent_local]=formStiffnessBernoulliBeam(GDof,N_elements,elementNodes,xx,E,I,P)
+function  [K_asembly_local,F_equiv_local]=formStiffnessBernoulliBeam(GDof,elementNodes,x_col,E,I,P)
+
+N_elements=size(elementNodes,1);
 
 K_asembly_local=zeros(GDof);
-F_equivalent_local=zeros(GDof,1);
-for i_element=1:N_elements
-  i_nodes=elementNodes(i_element,:);
+F_equiv_local=zeros(GDof,1);
+for iElement=1:N_elements
+  i_nodes=elementNodes(iElement,:);
   elementDof=[2*(i_nodes(1)-1)+1 2*(i_nodes(2)-1) 2*(i_nodes(2)-1)+1 2*(i_nodes(2)-1)+2];
 
-  L=xx(i_nodes(2))-xx(i_nodes(1));
+  L=x_col(i_nodes(2))-x_col(i_nodes(1));
   
   k_local=E*I/L^3*[ 12   6*L -12 6*L;
                     6*L 4*L^2 -6*L 2*L^2;
@@ -22,5 +24,5 @@ for i_element=1:N_elements
             -P*L*L/12];
   
   % equivalent force vector
-  F_equivalent_local(elementDof)=F_equivalent_local(elementDof)+f_equivalent_1ocal;  
+  F_equiv_local(elementDof)=F_equiv_local(elementDof)+f_equivalent_1ocal;  
 end
