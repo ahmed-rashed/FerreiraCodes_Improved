@@ -22,8 +22,10 @@ L_y=1;
 N_elements_X=20;
 N_elements_Y=10;
 N_elements=N_elements_X*N_elements_Y;
+%Create your "rectangularMesh"
 [nodeCoordinates, elementNodes]=rectangularMesh(L_x,L_y,N_elements_X,N_elements_Y);
-drawingMesh(nodeCoordinates,elementNodes,'Q4','k-');
+% Replace the following command
+%drawingMesh(nodeCoordinates,elementNodes,'Q4','k-');
 N_nodes=size(nodeCoordinates,1);
 
 % GDof: global number of degrees of freedom

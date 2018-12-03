@@ -40,10 +40,8 @@ prescribedDof=[4:9]';
 D_col=solution(GDof,prescribedDof,stiffness,force);
 
 % output D_col/reactions
-outputDisplacementsReactions(D_col,stiffness,...
-    GDof,prescribedDof)
+outputDisplacementsReactions(D_col,stiffness,GDof,prescribedDof)
 
 % % forces in elements
 disp('forces in elements ')
-EF=forcesInElementGrid(numberElements,elementNodes,...
-    xx,yy,E,I,G,J,D_col) 
+EF=forcesInElementGrid(numberElements,elementNodes,xx,yy,E,I,G,J,D_col) 

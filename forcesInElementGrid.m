@@ -1,38 +1,35 @@
-%................................................................
-
-function EF=forcesInElementGrid(numberElements,...
-    elementNodes,xx,yy,E,I,G,J,D_col)
+function EF=forcesInElementGrid(N_elements,elementNodes,xx,yy,E,I,G,J,D_col)
 
 % forces in elements
-EF=zeros(6,numberElements);
+EF=zeros(6,N_elements);
 
-for e=1:numberElements; 
-  % elementDof: element degrees of freedom (Dof)
-  indice=elementNodes(e,:)   ;       
-  elementDof=...
-      [(indice(1)-1)*3+1 (indice(1)-1)*3+2 (indice(1)-1)*3+3 ...
-      (indice(2)-1)*3+1 (indice(2)-1)*3+2 (indice(2)-1)*3+3] ;
-  xa=xx(indice(2))-xx(indice(1));
-  ya=yy(indice(2))-yy(indice(1));  
-  L=sqrt(xa*xa+ya*ya);
-  C=xa/L;
-  S=ya/L;
+for iElement=1:N_elements
+    iNodes=elementNodes(iElement,:);
+    elementDof=[(iNodes(1)-1)*3+1 (iNodes(1)-1)*3+2 (iNodes(1)-1)*3+3 (iNodes(2)-1)*3+1 (iNodes(2)-1)*3+2 (iNodes(2)-1)*3+3] ;
+    xa=xx(iNodes(2))-xx(iNodes(1));
+    ya=yy(iNodes(2))-yy(iNodes(1));  
+    L=sqrt(xa*xa+ya*ya);
+    C=xa/L;
+    S=ya/L;
 
-a1 = 12*E*I/(L*L*L);    
-a2 = 6*E*I/(L*L);
-a3 = G*J/L; 
-a4 = 4*E*I/L;
-a5 = 2*E*I/L;
+    a1 = 12*E*I/(L*L*L);    
+    a2 = 6*E*I/(L*L);
+    a3 = G*J/L; 
+    a4 = 4*E*I/L;
+    a5 = 2*E*I/L;
 
-% stiffness in local axes
-k = [a1 0 a2 -a1 0 a2 ; 0 a3 0 0 -a3 0 ;
-     a2 0 a4 -a2 0 a5 ; -a1 0 -a2 a1 0 -a2 ;
-     0 -a3 0 0 a3 0; a2 0 a5 -a2 0 a4];
+    % stiffness in local axes
+    k = [a1 0 a2 -a1 0 a2 ; 0 a3 0 0 -a3 0
+         a2 0 a4 -a2 0 a5 ; -a1 0 -a2 a1 0 -a2
+         0 -a3 0 0 a3 0; a2 0 a5 -a2 0 a4];
 
-% transformation matrix
-a=[1 0 0; 0 C S;0 -S C];
-R=[a zeros(3);zeros(3) a];
+    % transformation matrix
+    T_node=[1 0 0
+            0 C S
+            0 -S C];
 
-% forces in element
-EF (:,e)= k*R* D_col(elementDof);
+    T_element=[T_node zeros(3);zeros(3) T_node];
+
+    % forces in element
+    EF(:,iElement)= k*T_element* D_col(elementDof);
 end 

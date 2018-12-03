@@ -1,5 +1,3 @@
-%................................................................
-
 % MATLAB codes for Finite Element Analysis
 % problem19.m
 % Mindlin plate in bending

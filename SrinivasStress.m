@@ -1,7 +1,4 @@
-%................................................................
-
-function SrinivasStress(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,qbarra,U,h)
+function SrinivasStress(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,qbarra,U,h)
 
 % computes normal and shear stresses forSrinivas case
 % note that transverse shear stresses are not corrected

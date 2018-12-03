@@ -1,13 +1,13 @@
-function sigma=stresses2Dtruss(numberElements,elementNodes,nodeCoordinates,D_col,E_vec)
+function sigma=stresses2Dtruss(N_elements,elementNodes,nodesCoordinates,D_col,E_vec)
 
-sigma=nan(numberElements,1);
-for e=1:numberElements
-  iNodes=elementNodes(e,:);
-  elementDof=[iNodes(1)*2-1 iNodes(1)*2 iNodes(2)*2-1 iNodes(2)*2] ;
-  xa=nodeCoordinates(iNodes(2),1)-nodeCoordinates(iNodes(1),1);
-  ya=nodeCoordinates(iNodes(2),2)-nodeCoordinates(iNodes(1),2);
+sigma=nan(N_elements,1);
+for iElement=1:N_elements
+  iNodes=elementNodes(iElement,:);
+  elementDofs=[iNodes(1)*2-1 iNodes(1)*2 iNodes(2)*2-1 iNodes(2)*2] ;
+  xa=nodesCoordinates(iNodes(2),1)-nodesCoordinates(iNodes(1),1);
+  ya=nodesCoordinates(iNodes(2),2)-nodesCoordinates(iNodes(1),2);
   L=sqrt(xa*xa+ya*ya);
   C=xa/L;
   S=ya/L;   
-  sigma(e)=E_vec(e)/L*[-C  -S C S]*D_col(elementDof); 
+  sigma(iElement)=E_vec(iElement)/L*[-C  -S C S]*D_col(elementDofs); 
 end

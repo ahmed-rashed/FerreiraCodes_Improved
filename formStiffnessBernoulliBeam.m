@@ -18,11 +18,11 @@ for iElement=1:N_elements
   % Assembly stiffness matrix
   K_asembly_local(elementDof,elementDof)=K_asembly_local(elementDof,elementDof)+k_local;
 
-  f_equivalent_1ocal=[ P*L/2
+  f_eq_1ocal=[ P*L/2
             P*L*L/12
             P*L/2
             -P*L*L/12];
   
   % equivalent force vector
-  F_equiv_local(elementDof)=F_equiv_local(elementDof)+f_equivalent_1ocal;  
+  F_equiv_local(elementDof)=F_equiv_local(elementDof)+f_eq_1ocal;  
 end
