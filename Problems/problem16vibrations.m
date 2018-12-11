@@ -38,7 +38,7 @@ P=-1;
 GDof=2*N_nodes; 
 
 % computation of the system stiffness, force, mass
-[K_Assembly,F_equiv,M_Assembly]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,N_nodes,x_col,C,P,rho,I,h);
+[K_Assembly,F_equiv,M_Assembly]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,x_col,C,P,rho,I,h);
 
 %force vector
 F_col=nan(GDof,1);
@@ -53,6 +53,7 @@ titleText={'Clambed-Clambed','Simply-supported-Simply-supported','Clambed-Free'}
 N_problems=length(prescribedDof);
 D_cols=nan(GDof,N_problems);
 F_cols=nan(GDof,N_problems);
+N_modes=4;
 for ii=1:N_problems
     %displacement vector
     D_cols(prescribedDof{ii},ii)=0;
@@ -69,20 +70,12 @@ for ii=1:N_problems
     min(D_cols(1:N_nodes,ii))
     
     %Normal Modes Analysis
-    activeDof=setdiff(1:GDof,prescribedDof{ii});
+    [modeShapes,w_n]=solutionModal(prescribedDof{ii},D_cols(prescribedDof{ii},ii),K_Assembly,M_Assembly,N_modes);
 
-    [modeShapes,lambda]=eig(K_Assembly(activeDof,activeDof),M_Assembly(activeDof,activeDof));
-    w_n=sqrt(lambda);
-
-    N_modes=4;
-    v_ModeShape=nan(N_nodes,1);
-    [v_activeDof,ind]=setdiff(activeDof,N_nodes+1:GDof);
     figure
     for nn=1:N_modes
-        v_ModeShape(setdiff(prescribedDof{ii},N_nodes+1:GDof))=0;
-        v_ModeShape(v_activeDof)=modeShapes(ind,nn);
         subplot(N_modes,1,nn)
-        plot(x_col,v_ModeShape)
+        plot(x_col,modeShapes(1:N_nodes,nn))
         grid
         ylabel(['mode ',int2str(nn)])
     end

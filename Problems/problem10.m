@@ -2,7 +2,6 @@
 %Modified by Ahmed Rashed
 %This corrects the strange node ordering of Ferreira's book
 
-close all
 clearvars
 
 E_vec=210000*[1,1,1];

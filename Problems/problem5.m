@@ -2,7 +2,6 @@
 % antonio ferreira 2008
 % Modified by Ahmed Rashed
 
-close all
 clearvars
 
 %Units used are N mm
@@ -77,4 +76,4 @@ D_col(prescribedDof)=0;
 %     GDof,prescribedDof);
 
 % stresses at elements
-sigma=stresses2Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);
+stress=stresses2Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);

@@ -3,7 +3,6 @@
 %Modified by Ahmed Rashed
 %This corrects the strange node ordering of Ferreira's book
 
-close all
 
 E_vec=210000*[1,1,1];
 A_vec=200*[1,1,1];

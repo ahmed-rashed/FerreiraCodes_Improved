@@ -2,7 +2,6 @@
 %Modified by Ahmed Rashed
 %EOV in this example are not clear
 
-close all
 
 numberElements=8;
 E_vec=210e6*ones(1,numberElements);

@@ -3,7 +3,6 @@
 % Modified by Ahmed Rashed
 % Units used are ft lb
 
-close all
 clearvars
 
 E_vec=[30e6,30e6,30e6];
@@ -58,4 +57,4 @@ D_col(prescribedDof)=0;
 % drawingMesh(nodeCoordinates,elementNodes,'L2','k.--');
 
 % stresses at elements
-sigma=stresses2Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);
+stress=stresses2Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);

@@ -1,6 +1,7 @@
-function [K_Assembly,F_equiv_local,M_Assembly]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,N_Nodes,x_col,C,P,rho,I,h)
+function [K_Assembly,F_equiv_local,M_Assembly]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,x_col,C,P,rho,I,h)
 
 N_elements=size(elementNodes,1);
+N_Nodes=length(x_col);
 
 K_Assembly=zeros(GDof,GDof);
 M_Assembly=zeros(GDof,GDof);

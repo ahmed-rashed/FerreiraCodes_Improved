@@ -1,6 +1,6 @@
-function stresses3Dtruss(N_elements,elementNodes,nodesCoordinates,D_col,E_vec)
+function stress=stresses3Dtruss(N_elements,elementNodes,nodesCoordinates,D_col,E_vec)
 
-member_stress=nan(N_elements,1);
+stress=nan(N_elements,1);
 for iElement=1:N_elements
 	iNodes=elementNodes(iElement,:);
 	elementDof=[3*iNodes(1)-2 3*iNodes(1)-1 3*iNodes(1) 3*iNodes(2)-2 3*iNodes(2)-1 3*iNodes(2)] ;
@@ -16,6 +16,5 @@ for iElement=1:N_elements
 	CZx = (z2-z1)/L;
  
 	u=D_col(elementDof);
-	member_stress(iElement)=E_vec(iElement)/L*[-CXx -CYx -CZx CXx CYx CZx]*u;
-	fprintf('%3d %12.8f\n',iElement, member_stress(iElement));
+	stress(iElement)=E_vec(iElement)/L*[-CXx -CYx -CZx CXx CYx CZx]*u;
 end

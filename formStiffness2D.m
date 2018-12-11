@@ -8,10 +8,10 @@ M_Assembly=zeros(GDof,GDof);
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
-N_nodes=size(elementNodes,2);
+N_nodesElement=size(elementNodes,2);
 for iElement=1:numberElements
     i_nodes=elementNodes(iElement,:); 
-    elementDof=[i_nodes i_nodes+N_nodes];
+    elementDof=[i_nodes i_nodes+N_nodesElement];
 
     % cycle for Gauss point
     for q=1:size(gaussWeights,1)
@@ -25,15 +25,15 @@ for iElement=1:numberElements
         [Jacob,invJacobian,XYderivatives]=Jacobian(nodeCoordinates(i_nodes,:),naturalDerivatives);
 
         %  B matrix
-        B=zeros(3,2*N_nodes);
-        B(1,1:N_nodes)           = XYderivatives(:,1).';
-        B(2,N_nodes+1:2*N_nodes) = XYderivatives(:,2).';
-        B(3,1:N_nodes)           = XYderivatives(:,2).';
-        B(3,N_nodes+1:2*N_nodes) = XYderivatives(:,1).';
+        B=zeros(3,2*N_nodesElement);
+        B(1,1:N_nodesElement)           = XYderivatives(:,1).';
+        B(2,N_nodesElement+1:2*N_nodesElement) = XYderivatives(:,2).';
+        B(3,1:N_nodesElement)           = XYderivatives(:,2).';
+        B(3,N_nodesElement+1:2*N_nodesElement) = XYderivatives(:,1).';
 
         K_Assembly(elementDof,elementDof)=K_Assembly(elementDof,elementDof)+B.'*C*h*B*gaussWeights(q)*det(Jacob);
 
         M_Assembly(i_nodes,i_nodes)=M_Assembly(i_nodes,i_nodes)+shapeFunction*shapeFunction.'*rho*h*gaussWeights(q)*det(Jacob);
-        M_Assembly(i_nodes+N_nodes,i_nodes+N_nodes)=M_Assembly(i_nodes+N_nodes,i_nodes+N_nodes)+shapeFunction*shapeFunction.'*rho*h*gaussWeights(q)*det(Jacob);
+        M_Assembly(i_nodes+N_nodesElement,i_nodes+N_nodesElement)=M_Assembly(i_nodes+N_nodesElement,i_nodes+N_nodesElement)+shapeFunction*shapeFunction.'*rho*h*gaussWeights(q)*det(Jacob);
     end
 end

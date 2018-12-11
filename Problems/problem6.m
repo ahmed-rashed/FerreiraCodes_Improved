@@ -67,8 +67,8 @@ for e=1:numberElements-1
   length_element=sqrt(xa*xa+ya*ya);
   C=xa/length_element;
   S=ya/length_element;   
-  sigma(e)=E/length_element* ...
+  stress(e)=E/length_element* ...
       [-C  -S C S]*D_col(elementDof); 
 end    
 disp('stresses')
-sigma'
+stress'

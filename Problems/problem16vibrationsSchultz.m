@@ -43,8 +43,7 @@ GDof=2*numberNodes;
 
 % computation of the system stiffness, force, mass
 [stiffness,force,mass]=...
-    formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
-    elementNodes,numberNodes,xx,C,P,rho,I,thickness);
+    formStiffnessMassTimoshenkoBeam(GDof,numberElements,elementNodes,xx,C,P,rho,I,thickness);
 
 % boundary conditions (CC)
 fixedNodeW =find(xx==min(nodeCoordinates(:))...

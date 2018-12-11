@@ -2,7 +2,6 @@
 %Modified by Ahmed Rashed
 %EOV in this example are not clear
 
-close all
 clearvars
 
 E_vec=210e6*[1,1,1];

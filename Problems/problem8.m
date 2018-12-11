@@ -3,7 +3,6 @@
 % antonio ferreira 2008
 % Modified by Ahmed Rashed
 
-close all
 clearvars
 
 
@@ -51,4 +50,4 @@ D_col(prescribedDof)=0;
 % outputDisplacementsReactions(D_col,K_assembly,GDof,prescribedDof);
 
 % stresses at elements
-stresses3Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);
+stress=stresses3Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);

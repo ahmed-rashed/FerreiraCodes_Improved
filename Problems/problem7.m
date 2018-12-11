@@ -3,7 +3,6 @@
 % antonio ferreira 2008
 % Modified by Ahmed Rashed
 
-close all
 clearvars
 
 E_vec=1.2e6*ones(1,3); 
@@ -47,5 +46,4 @@ D_col(prescribedDof)=0;
 %     GDof,prescribedDof)
 
 % stresses at elements
-stresses3Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);
-
+stress=stresses3Dtruss(numberElements,elementNodes,nodesCoords,D_col,E_vec);

@@ -35,7 +35,7 @@ P=-1;
 GDof=2*N_nodes; 
 
 % computation of the system stiffness matrix 
-[K_Assembly,F_equiv]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,N_nodes,x_col,C,P,rho,I,h);
+[K_Assembly,F_equiv]=formStiffnessMassTimoshenkoBeam(GDof,elementNodes,x_col,C,P,rho,I,h);
 
 %force vector
 F_col=nan(GDof,1);
