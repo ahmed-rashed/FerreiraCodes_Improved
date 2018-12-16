@@ -1,40 +1,37 @@
-function stresses=stresses2D(numberElements,elementNodes,numberNodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)
+function stresses=stresses2D(N_elements,elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)
 
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
 % stresses at nodes
-stresses=zeros(numberElements,size(elementNodes,2),3);
-  
-for iElement=1:numberElements                           
+N_nodesPerElement=size(elementNodes,2);
+stresses=zeros(N_elements,N_nodesPerElement,3);
+
+elementDof=nan(1,2*N_nodesPerElement);
+B=zeros(3,2*N_nodesPerElement);
+for iElement=1:N_elements                           
     i_nodes=elementNodes(iElement,:); 
-    elementDof=[ i_nodes i_nodes+numberNodes ];   
-    nn=length(i_nodes);
-    for q=1:size(gaussWeights,1)                        
-        xi=gaussLocations(q1);
-        eta=gaussLocations(q2);
+    elementDof(1:2:end)=2*i_nodes-1;
+    elementDof(2:2:end)=2*i_nodes;
+    for q=1:size(gaussWeights,1)
+        xi=gaussLocations(q,1);
+        eta=gaussLocations(q,2);
        
-        [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
+        [~,N_reduced_xi_eta_cols]=shapeFunctionQ4(xi,eta);
+        [~,N_reduced_x_y_cols]=Jacobian(nodeCoordinates(i_nodes,:),N_reduced_xi_eta_cols);
 
-        [Jacob,XYderivatives]=Jacobian(nodeCoordinates(i_nodes,:),naturalDerivatives);
+        B(1,1:2:end)=N_reduced_x_y_cols(:,1).';
+        B(2,2:2:end)=N_reduced_x_y_cols(:,2).';
+        B(3,1:2:end)=N_reduced_x_y_cols(:,2).';
+        B(3,2:2:end)=N_reduced_x_y_cols(:,1).';
 
-        %  B matrix
-        B=zeros(3,2*nn);
-        B(1,1:nn)       = XYderivatives(:,1)';
-        B(2,nn+1:2*nn)  = XYderivatives(:,2)';
-        B(3,1:nn)       = XYderivatives(:,2)';
-        B(3,nn+1:2*nn)  = XYderivatives(:,1)';
-
-        % element deformation 
-        strain=B*D_col(elementDof);
-        stresses(iElement,q,:)=C*strain;    
+        stresses(iElement,q,:)=C*B*D_col(elementDof);
     end                               
 end   
 
-% % drawing stress fields
-% % on top of the deformed shape
+% % drawing stress fields on top of the deformed shape
 % figure
-% drawingField(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4',stress(:,:,1));%sigma XX
+% drawingField(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4',stresses(:,:,1));%sigma XX
 % hold on
 % drawingMesh(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4','k-');
 % drawingMesh(nodeCoordinates,elementNodes,'Q4','k--');

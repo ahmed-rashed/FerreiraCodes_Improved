@@ -1,12 +1,11 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem17.m
-% 2D proble: thin plate in tension
+% 2D problem: thin plate in tension
 % antonio ferreira 2008
+% Modified by Ahmed Rashed
+% This corrects the strange node numbering of Ferreira
 
-% clear memory
-clearvars;colordef white;clf
+clc
+clearvars
+close all
 
 % materials
 L  = 1;     % comprimento 

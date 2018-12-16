@@ -1,14 +1,17 @@
 % 2D problem: thin plate in tension
 % antonio ferreira 2008
-%Modified by Ahmed Rashed
+% Modified by Ahmed Rashed
+% This corrects the strange node numbering of Ferreira
 
-clearvars;
+clc
+clearvars
 close all
 
 % materials
 E=10e7;
 nu=0.30;  
 
+%Plane stress model
 C=E/(1-nu^2)*[  1 nu 0
                 nu 1 0
                 0 0 (1-nu)/2];
@@ -35,52 +38,57 @@ GDof=2*N_nodes;
 [K_Assembly,M_Assembly]=formStiffness2D(GDof,N_elements,elementNodes,nodeCoordinates,C,1,1);
 
 % boundary conditions 
-fixedNodeX=find(nodeCoordinates(:,1)==0);  % fixed in XX
-fixedNodeY=find(nodeCoordinates(:,2)==0);  % fixed in YY
-prescribedDof=[ fixedNodeX
-                fixedNodeY+N_nodes];
+iNodeLeftEdge=find(nodeCoordinates(:,1)==0);
+iNodeBottomEdge=find(nodeCoordinates(:,2)==0);
+iNodeRightEdge=find(nodeCoordinates(:,1)==L_x);
+iNodeRightTop=iNodeRightEdge(nodeCoordinates(iNodeRightEdge,2)==L_y);
+iNodeRightbottom=iNodeRightEdge(nodeCoordinates(iNodeRightEdge,2)==0);
 
-% force vector (distributed load applied at xx=L_x)
-force=zeros(GDof,1);
-rightBord=find(nodeCoordinates(:,1)==L_x);
-force(rightBord)   =P*L_y/N_elements_Y;
-force(rightBord(1))=force(rightBord(1))/2;
-force(rightBord(end))=force(rightBord(end))/2;
+prescribedDof=[ 2*iNodeLeftEdge-1
+                2*iNodeBottomEdge];
+
+% force vector (distributed load applied at x=L_x)
+F_col=zeros(GDof,1);
+F_col(prescribedDof)=nan;
+
+F_equiv=zeros(GDof,1);
+F_equiv(2*iNodeRightEdge-1)=P*(L_y/N_elements_Y);
+F_equiv(2*iNodeRightTop-1)=P*(L_y/N_elements_Y)/2;
+F_equiv(2*iNodeRightbottom-1)=P*(L_y/N_elements_Y)/2;
+
+%displacement vector
+D_col=nan(GDof,1);
+D_col(prescribedDof)=0;
 
 % solution
-D_col=solution(GDof,prescribedDof,K_Assembly,force);
+[D_col,F_col]=solution(prescribedDof,K_Assembly,D_col,F_col,F_equiv);
 
 %Normal Modes Analysis
-activeDof=setdiff(1:GDof,prescribedDof);
+N_modes=4;
+[D_modeShape_cols,w_n_vec]=solutionModal(prescribedDof,D_col(prescribedDof),K_Assembly,M_Assembly,N_modes);
 
-[modeShapes,lambda]=eig(K_Assembly(activeDof,activeDof),M_Assembly(activeDof,activeDof)); 
-w_n=sqrt(lambda);
+% Drawing
+matrixShape=[N_elements_Y+1,N_elements_X+1];
+scaleFactor=10;
 
-% sort out eigenvalues
-[w_n,ii]=sort(w_n);
-modeShapes=modeShapes(:,ii);
+D_x_mat=reshape(D_col(1:2:end),matrixShape);
+D_y_mat=reshape(D_col(2:2:end),matrixShape);
+x_mat=reshape(nodeCoordinates(:,1),matrixShape);
+y_mat=reshape(nodeCoordinates(:,2),matrixShape);
 
-% % drawing eigenmodes
-% N_modes=4;
+x_deformed_mat=x_mat+scaleFactor*D_x_mat;
+y_deformed_mat=y_mat+scaleFactor*D_y_mat;
+D_magnitude_mat=sqrt(D_x_mat.^2+D_y_mat.^2);
+h=pcolor(x_deformed_mat,y_deformed_mat,D_x_mat);
+set(h,'EdgeColor',.5*[1,1,1])
+hold on
 
-% % D_col
-% disp('Displacements')
-% f=[1:GDof; D_col.'];
-% fprintf('node U\n')
-% fprintf('%3d %12.8f\n',f)
-% UX=D_col(1:N_nodes);
-% UY=D_col(N_nodes+1:GDof);
-% scaleFactor=10;
-% 
-% % deformed shape
-% figure
-% drawingField(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4',UX);%U XX
-% hold on
-% drawingMesh(nodeCoordinates+scaleFactor*[UX UY],elementNodes,'Q4','k-');
-% drawingMesh(nodeCoordinates,elementNodes,'Q4','k--');
-% colorbar
-% title('U XX  (on deformed shape)')
-% axis off
+mesh(x_mat,y_mat,0*x_mat,'FaceColor','none','EdgeColor','k')
+view(2)
+axis equal
+axis off
+title('Deformed shape')
+colorbar
 
 % stresses at nodes
-stresses=stresses2D(N_elements,elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)
+stresses=stresses2D(N_elements,elementNodes,N_nodes,nodeCoordinates,D_col,D_x_mat(:),D_y_mat(:),C,scaleFactor);
