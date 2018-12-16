@@ -1,11 +1,13 @@
-function stresses=stresses2D(N_elements,elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)
+function stresses=stresses2D(elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,scaleFactor)
+
+N_elements=size(elementNodes,1);
 
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
 % stresses at nodes
 N_nodesPerElement=size(elementNodes,2);
-stresses=zeros(N_elements,N_nodesPerElement,3);
+stresses=zeros(N_elements,3,N_nodesPerElement);
 
 elementDof=nan(1,2*N_nodesPerElement);
 B=zeros(3,2*N_nodesPerElement);
@@ -25,7 +27,7 @@ for iElement=1:N_elements
         B(3,1:2:end)=N_reduced_x_y_cols(:,2).';
         B(3,2:2:end)=N_reduced_x_y_cols(:,1).';
 
-        stresses(iElement,q,:)=C*B*D_col(elementDof);
+        stresses(iElement,:,q)=C*B*D_col(elementDof);
     end                               
 end   
 

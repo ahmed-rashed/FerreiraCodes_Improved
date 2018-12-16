@@ -1,7 +1,7 @@
 % Modified by Ahmed Rashed
 % This corrects the strange node numbering of Ferreira
 
-function [K_Assembly,M_Assembly]=formStiffness2D(GDof,numberElements,elementNodes,nodeCoordinates,C,rho,h)
+function [K_Assembly,M_Assembly]=formStiffnessMass2D(GDof,elementNodes,nodeCoordinates,C,rho,h)
 
 % compute stiffness matrix (and mass matrix) for plane stress Q4 elements
 
@@ -11,10 +11,11 @@ M_Assembly=zeros(GDof,GDof);
 % 2 by 2 quadrature
 [gaussWeights,gaussLocations]=gaussQuadrature('complete');
 
+N_elements=size(elementNodes,1);
 N_nodesPerElement=size(elementNodes,2);
 elementDof=nan(1,2*N_nodesPerElement);
 B=zeros(3,2*N_nodesPerElement);
-for iElement=1:numberElements
+for iElement=1:N_elements
     i_nodes=elementNodes(iElement,:); 
     elementDof(1:2:end)=2*i_nodes-1;
     elementDof(2:2:end)=2*i_nodes;
