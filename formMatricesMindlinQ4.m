@@ -38,7 +38,7 @@ for e=1:numberElements
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,invJacobian,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
+    [Jacob,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
     
 % [B] matrix bending
     B_b=zeros(3,3*nn);
@@ -98,7 +98,7 @@ for e=1:numberElements
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,invJacobian,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
+    [Jacob,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
     
 % [B] matrix shear
     B_s=zeros(2,3*nn);

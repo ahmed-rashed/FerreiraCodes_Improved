@@ -32,8 +32,7 @@ for e=1:numberElements
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,invJacobian,XYderivatives]=...
-        Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
 
 %  B matrix
     B_b=zeros(3,3*nn);
@@ -72,8 +71,7 @@ for e=1:numberElements
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,invJacobian,XYderivatives]=...
-        Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
 
 %  B matrix
     B_s=zeros(2,3*nn);

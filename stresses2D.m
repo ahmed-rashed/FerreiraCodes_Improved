@@ -16,7 +16,7 @@ for iElement=1:numberElements
        
         [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
 
-        [Jacob,invJacobian,XYderivatives]=Jacobian(nodeCoordinates(i_nodes,:),naturalDerivatives);
+        [Jacob,XYderivatives]=Jacobian(nodeCoordinates(i_nodes,:),naturalDerivatives);
 
         %  B matrix
         B=zeros(3,2*nn);

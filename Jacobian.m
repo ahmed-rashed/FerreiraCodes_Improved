@@ -1,10 +1,8 @@
-function [JacobianMatrix,invJacobian,XYDerivatives]=Jacobian(nodeCoordinates,naturalDerivatives)
+function [J_mat,N_reduced_x_y_cols]=Jacobian(nodeCoordinates,N_reduced_xi_eta_cols)
 % JacobianMatrix    : Jacobian matrix
-% invJacobian : inverse of Jacobian Matrix
 % XYDerivatives  : derivatives w.r.t. x and y
 % naturalDerivatives  : derivatives w.r.t. xi and eta
 % nodeCoordinates  : nodal coordinates at element level
 
-JacobianMatrix=nodeCoordinates.'*naturalDerivatives;
-invJacobian=inv(JacobianMatrix);
-XYDerivatives=naturalDerivatives/JacobianMatrix;
+J_mat=nodeCoordinates.'*N_reduced_xi_eta_cols;
+N_reduced_x_y_cols=N_reduced_xi_eta_cols/J_mat;

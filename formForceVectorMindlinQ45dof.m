@@ -30,8 +30,7 @@ for e=1:numberElements
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,invJacobian,XYderivatives]=...
-        Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
     
 % force vector
     force(indice)=force(indice)+shapeFunction*P*...
