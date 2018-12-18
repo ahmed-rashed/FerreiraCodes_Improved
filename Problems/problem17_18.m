@@ -91,6 +91,7 @@ for iProblem=1:N_problems
     %Normal Modes Analysis
     [D_modeShape_layers(:,:,iProblem),w_n_rows(iProblem,:)]=solutionModal(prescribedDof{iProblem},D_cols(prescribedDof{iProblem},iProblem),K_Assembly,M_Assembly,N_modes);
 
+    %Draw deformed shape
     D_x_mat=reshape(D_cols(1:2:end,iProblem),matrixShape);
     D_y_mat=reshape(D_cols(2:2:end,iProblem),matrixShape);
 
@@ -107,7 +108,7 @@ for iProblem=1:N_problems
     mesh(x_mat,y_mat,0*x_mat,'FaceColor','none','EdgeColor','k')
     view(2)
     axis equal
-    axis off
+%     axis off
     title(['Deformed shape (scaled ',num2str(scaleFactor_vec(iProblem)),' times)'])
     colorbar
     
