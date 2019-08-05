@@ -30,7 +30,7 @@ for iElement=1:N_elements
         B=zeros(2,2*ndof);  
         B(1,ndof+1:2*ndof)=Xderivatives(:)'; 
         
-        % K
+        % K_Assembly
         K_Assembly(elementDof,elementDof)=K_Assembly(elementDof,elementDof)+B'*B*gaussWeights(q)*detJacobian*C(1,1);
         F_equiv_local(i_nodes)=F_equiv_local(i_nodes)+shape*P*detJacobian*gaussWeights(q); 
 
@@ -59,7 +59,7 @@ for iElement=1:N_elements
         B(2,1:ndof)       = Xderivatives(:)';  
         B(2,ndof+1:2*ndof)  = shape;
         
-        % K
+        % K_Assembly
         K_Assembly(elementDof,elementDof)=K_Assembly(elementDof,elementDof)+B'*B*gaussWeights(q)*detJacobian*C(2,2); 
     end  
 end 

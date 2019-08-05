@@ -15,7 +15,7 @@ rho=1;
 h=1;
 
 %Plane stress model
-C=E/(1-nu^2)*[  1 nu 0
+D=E/(1-nu^2)*[  1 nu 0
                 nu 1 0
                 0 0 (1-nu)/2];
 
@@ -36,7 +36,7 @@ N_nodes=size(nodeCoordinates,1);
 GDof=2*N_nodes; 
 
 % calculation of the system stiffness matrix
-[K_Assembly,M_Assembly]=formStiffnessMass2D(GDof,elementNodes,nodeCoordinates,C,rho,h);
+[K_Assembly,M_Assembly]=formStiffnessMass2D(GDof,elementNodes,nodeCoordinates,D,rho,h);
 
 % boundary conditions 
 iNodeLeftEdge=find(nodeCoordinates(:,1)==0);
@@ -135,5 +135,5 @@ for iProblem=1:N_problems
     end
 
     % stresses at nodes
-    stresses{iProblem}=stresses2D(elementNodes,N_nodes,nodeCoordinates,D_cols(:,iProblem),D_x_mat(:),D_y_mat(:),C,scaleFactor_vec(iProblem));
+    stresses{iProblem}=stresses2D(elementNodes,N_nodes,nodeCoordinates,D_cols(:,iProblem),D_x_mat(:),D_y_mat(:),D,scaleFactor_vec(iProblem));
 end

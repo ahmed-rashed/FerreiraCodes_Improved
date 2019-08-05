@@ -28,18 +28,18 @@ for e=1:numberElements
     eta=pt(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
 
 %  B matrix
     B_b=zeros(3,3*nn);
-    B_b(1,nn+1:2*nn)  = XYderivatives(:,1)';  
-    B_b(2,2*nn+1:3*nn)= XYderivatives(:,2)';
-    B_b(3,nn+1:2*nn)  = XYderivatives(:,2)';  
-    B_b(3,2*nn+1:3*nn)= XYderivatives(:,1)';
+    B_b(1,nn+1:2*nn)  = N_diff_x_y_cols(:,1)';  
+    B_b(2,2*nn+1:3*nn)= N_diff_x_y_cols(:,2)';
+    B_b(3,nn+1:2*nn)  = N_diff_x_y_cols(:,2)';  
+    B_b(3,2*nn+1:3*nn)= N_diff_x_y_cols(:,1)';
 % stiffness matrix
     stiffness(elementDof,elementDof)=...
         stiffness(elementDof,elementDof)+...
@@ -67,18 +67,18 @@ for e=1:numberElements
     eta=pt(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
 
 %  B matrix
     B_s=zeros(2,3*nn);
-    B_s(1,1:nn)       = XYderivatives(:,1)';  
-    B_s(2,1:nn)       = XYderivatives(:,2)';
-    B_s(1,nn+1:2*nn)  = shapeFunction;
-    B_s(2,2*nn+1:3*nn)= shapeFunction;   
+    B_s(1,1:nn)       = N_diff_x_y_cols(:,1)';  
+    B_s(2,1:nn)       = N_diff_x_y_cols(:,2)';
+    B_s(1,nn+1:2*nn)  = N_col;
+    B_s(2,2*nn+1:3*nn)= N_col;   
 % stiffness matrix
     stiffness(elementDof,elementDof)=...
         stiffness(elementDof,elementDof)+...

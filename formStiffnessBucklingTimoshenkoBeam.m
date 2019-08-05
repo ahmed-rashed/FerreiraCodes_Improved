@@ -1,8 +1,4 @@
-%................................................................
-
-function [stiffness,Kg]=...
-    formStiffnessBucklingTimoshenkoBeam(GDof,numberElements,...
-    elementNodes,numberNodes,xx,C,P,I,thickness)
+function [stiffness,Kg]=formStiffnessBucklingTimoshenkoBeam(GDof,numberElements,elementNodes,numberNodes,xx,C,P,I,thickness)
 
 % computation of stiffness matrix and geometric stiffness
 % for Timoshenko beam element
@@ -10,7 +6,7 @@ stiffness=zeros(GDof);
 Kg=zeros(GDof);
 
 % stiffness matrix
-    gaussLocations=[0.];                            
+    gaussLocations=[0.];
     gaussWeights=[1.];
     
 % bending contribution for stiffness matrix

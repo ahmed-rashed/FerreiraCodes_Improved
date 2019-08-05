@@ -31,39 +31,39 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
     
 % [B] matrix bending
     B_b=zeros(3,5*ndof);
-    B_b(1,ndof+1:2*ndof)        = XYderivatives(:,1)';  
-    B_b(2,2*ndof+1:3*ndof)      = XYderivatives(:,2)';
-    B_b(3,ndof+1:2*ndof)        = XYderivatives(:,2)';  
-    B_b(3,2*ndof+1:3*ndof)      = XYderivatives(:,1)';
+    B_b(1,ndof+1:2*ndof)        = N_diff_x_y_cols(:,1)';  
+    B_b(2,2*ndof+1:3*ndof)      = N_diff_x_y_cols(:,2)';
+    B_b(3,ndof+1:2*ndof)        = N_diff_x_y_cols(:,2)';  
+    B_b(3,2*ndof+1:3*ndof)      = N_diff_x_y_cols(:,1)';
 % [B] matrix membrane
     B_m=zeros(3,5*ndof);
-    B_m(1,3*ndof+1:4*ndof)      = XYderivatives(:,1)';  
-    B_m(2,4*ndof+1:5*ndof)      = XYderivatives(:,2)';
-    B_m(3,3*ndof+1:4*ndof)      = XYderivatives(:,2)';  
-    B_m(3,4*ndof+1:5*ndof)      = XYderivatives(:,1)';
+    B_m(1,3*ndof+1:4*ndof)      = N_diff_x_y_cols(:,1)';  
+    B_m(2,4*ndof+1:5*ndof)      = N_diff_x_y_cols(:,2)';
+    B_m(3,3*ndof+1:4*ndof)      = N_diff_x_y_cols(:,2)';  
+    B_m(3,4*ndof+1:5*ndof)      = N_diff_x_y_cols(:,1)';
     
 % stiffness matrix 
 
 % ... bending-bending
     K(elementDof,elementDof)=K(elementDof,elementDof)+...
-                       B_b'*DMatrix*B_b*gaussWeights(q)*det(Jacob);
+                       B_b'*DMatrix*B_b*gaussWeights(q)*det(J_mat);
 % ... membrane-membrane                  
     K(elementDof,elementDof)=K(elementDof,elementDof)+...
-                       B_m'*AMatrix*B_m*gaussWeights(q)*det(Jacob);
+                       B_m'*AMatrix*B_m*gaussWeights(q)*det(J_mat);
 % ... membrane-bending                  
     K(elementDof,elementDof)=K(elementDof,elementDof)+...
-                       B_m'*BMatrix*B_b*gaussWeights(q)*det(Jacob);
+                       B_m'*BMatrix*B_b*gaussWeights(q)*det(J_mat);
 % ... bending-membrane                  
     K(elementDof,elementDof)=K(elementDof,elementDof)+...
-                       B_b'*BMatrix*B_m*gaussWeights(q)*det(Jacob);
+                       B_b'*BMatrix*B_m*gaussWeights(q)*det(J_mat);
 
     end  % Gauss point
 end    % element
@@ -90,21 +90,21 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);  
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);  
     
 % [B] matrix shear
     B_s=zeros(2,5*ndof);
-    B_s(1,1:ndof)       = XYderivatives(:,1)';  
-    B_s(2,1:ndof)       = XYderivatives(:,2)';
-    B_s(1,ndof+1:2*ndof)  = shapeFunction;           
-    B_s(2,2*ndof+1:3*ndof)= shapeFunction;
+    B_s(1,1:ndof)       = N_diff_x_y_cols(:,1)';  
+    B_s(2,1:ndof)       = N_diff_x_y_cols(:,2)';
+    B_s(1,ndof+1:2*ndof)  = N_col;           
+    B_s(2,2*ndof+1:3*ndof)= N_col;
 
 % stiffness matrix shear
     K(elementDof,elementDof)=K(elementDof,elementDof)+...
-        B_s'*SMatrix  *B_s*gaussWeights(q)*det(Jacob);  
+        B_s'*SMatrix  *B_s*gaussWeights(q)*det(J_mat);  
   end  % gauss point
 end    % element

@@ -59,25 +59,24 @@ end
 % % output D_col/reactions
 % outputDisplacementsReactions(D_col,stiffness,GDof,prescribedDof)
 
-% draw deformed shape
-figure;
-for iProblem=1:N_problems
-    subplot(N_problems,1,iProblem)
-    plot(x_col,D_cols(1:2:end,iProblem))
-    grid on
-    title([titleText{iProblem},' deformation'])
-end
-
-
-% draw mode shape
-for iProblem=1:N_problems
-    figure
-    for iMode=1:N_modes
-        subplot(N_modes,1,iMode)
-        plot(x_col,D_modeShape_layers(1:2:end,iMode,iProblem))
-        grid on
-        ylabel(['$\omega_{',int2str(iMode),'}=',num2str(w_n_rows(iProblem,iMode)),'$'],'interpreter','latex')
-    end
-    subplot(N_modes,1,1)
-    title([titleText{iProblem},' mode shapes'])
-end
+% % draw deformed shape
+% figure;
+% for iProblem=1:N_problems
+%     subplot(N_problems,1,iProblem)
+%     plot(x_col,D_cols(1:2:end,iProblem))
+%     grid on
+%     title([titleText{iProblem},' deformation'])
+% end
+% 
+% % draw mode shape
+% for iProblem=1:N_problems
+%     figure
+%     for iMode=1:N_modes
+%         subplot(N_modes,1,iMode)
+%         plot(x_col,D_modeShape_layers(1:2:end,iMode,iProblem))
+%         grid on
+%         ylabel(['$\omega_{',int2str(iMode),'}=',num2str(w_n_rows(iProblem,iMode),'%.4g'),'$'],'interpreter','latex')
+%     end
+%     subplot(N_modes,1,1)
+%     title([titleText{iProblem},' mode shapes'])
+% end

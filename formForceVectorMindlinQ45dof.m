@@ -26,15 +26,15 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta);
+    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
     
 % force vector
     force(indice)=force(indice)+shapeFunction*P*...
-        det(Jacob)*GaussWeight;    
+        det(J_mat)*GaussWeight;    
   end  % Gauss point
   
 end    % element

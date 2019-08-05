@@ -1,5 +1,3 @@
-%................................................................
-
 function bucklingMindlinPlate3Dof
 
 % this function performs buckling analysis

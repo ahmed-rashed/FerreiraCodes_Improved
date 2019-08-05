@@ -28,18 +28,18 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
 
 % geometric matrix
     G_b=zeros(2,3*ndof);
-    G_b(1,1:ndof)  = XYderivatives(:,1)';  
-    G_b(2,1:ndof)  = XYderivatives(:,2)';  
+    G_b(1,1:ndof)  = N_diff_x_y_cols(:,1)';  
+    G_b(2,1:ndof)  = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)=KG(elementDof,elementDof)+ ...
-    G_b'*sigmaMatrix*thickness*G_b*gaussWeights(q)*det(Jacob);
+    G_b'*sigmaMatrix*thickness*G_b*gaussWeights(q)*det(J_mat);
     
    end  % Gauss point
   
@@ -57,26 +57,26 @@ end    % element
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [shapeFunction,naturalDerivatives]=shapeFunctionQ4(xi,eta)
+    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [Jacob,XYderivatives]=Jacobian(nodeCoordinates(indice,:),naturalDerivatives);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
 
 % Geometric matrix
     G_s1=zeros(2,3*ndof);
-    G_s1(1,ndof+1:2*ndof)    = XYderivatives(:,1)';  
-    G_s1(2,ndof+1:2*ndof)    = XYderivatives(:,2)';  
+    G_s1(1,ndof+1:2*ndof)    = N_diff_x_y_cols(:,1)';  
+    G_s1(2,ndof+1:2*ndof)    = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
     G_s1'*sigmaMatrix*thickness^3/12*G_s1*...
-    gaussWeights(q)*det(Jacob);
+    gaussWeights(q)*det(J_mat);
     
     G_s2=zeros(2,3*ndof);
-    G_s2(1,2*ndof+1:3*ndof)    = XYderivatives(:,1)';  
-    G_s2(2,2*ndof+1:3*ndof)    = XYderivatives(:,2)';  
+    G_s2(1,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,1)';  
+    G_s2(2,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
     G_s2'*sigmaMatrix*thickness^3/12*G_s2*...
-    gaussWeights(q)*det(Jacob);
+    gaussWeights(q)*det(J_mat);
 
   end  % gauss point
 end    % element

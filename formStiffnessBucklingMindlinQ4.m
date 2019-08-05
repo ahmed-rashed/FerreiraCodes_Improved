@@ -30,29 +30,29 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [N,dNdxi]=shapeFunctionQ4(xi,eta)
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J0,invJ0,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
     
 % [B] matrix bending
     B_b=zeros(3,3*ndof);
-    B_b(1,ndof+1:2*ndof)  = dNdx(:,1)';  
-    B_b(2,2*ndof+1:3*ndof)= dNdx(:,2)';
-    B_b(3,ndof+1:2*ndof)  = dNdx(:,2)';  
-    B_b(3,2*ndof+1:3*ndof)= dNdx(:,1)';
+    B_b(1,ndof+1:2*ndof)  = N_diff_x_y_cols(:,1)';  
+    B_b(2,2*ndof+1:3*ndof)= N_diff_x_y_cols(:,2)';
+    B_b(3,ndof+1:2*ndof)  = N_diff_x_y_cols(:,2)';  
+    B_b(3,2*ndof+1:3*ndof)= N_diff_x_y_cols(:,1)';
     
 % stiffness matrix bending
     K(elementDof,elementDof)=K(elementDof,elementDof)+ ...
-        B_b'*C_bending*B_b*W(q)*det(J0);
+        B_b'*C_bending*B_b*W(q)*det(J_mat);
      
 % geometric matrix
     G_b=zeros(2,3*ndof);
-    G_b(1,1:ndof)  = dNdx(:,1)';  
-    G_b(2,1:ndof)  = dNdx(:,2)';  
+    G_b(1,1:ndof)  = N_diff_x_y_cols(:,1)';  
+    G_b(2,1:ndof)  = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)=KG(elementDof,elementDof)+ ...
-        G_b'*sigmaMatrix*thickness*G_b*W(q)*det(J0);
+        G_b'*sigmaMatrix*thickness*G_b*W(q)*det(J_mat);
   end  % Gauss point
 end    % element
 
@@ -77,35 +77,35 @@ for e=1:numberElements
     eta=pt(2);
     
 % shape functions and derivatives
-    %[N,dNdxi]=shapeFunction(xi,eta);
-    [N,dNdxi]=shapeFunctionQ4(xi,eta)
+    %[N_col,N_diff_xi_eta_cols]=shapeFunction(xi,eta);
+    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J0,invJ0,dNdx]=Jacobian(nodeCoordinates(indice,:),dNdxi);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
     
 % [B] matrix shear
     B_s=zeros(2,3*ndof);
-    B_s(1,1:ndof)       = dNdx(:,1)';  
-    B_s(2,1:ndof)       = dNdx(:,2)';
-    B_s(1,ndof+1:2*ndof)  = N;           
-    B_s(2,2*ndof+1:3*ndof)= N;
+    B_s(1,1:ndof)       = N_diff_x_y_cols(:,1)';  
+    B_s(2,1:ndof)       = N_diff_x_y_cols(:,2)';
+    B_s(1,ndof+1:2*ndof)  = N_col;           
+    B_s(2,2*ndof+1:3*ndof)= N_col;
 
 % stiffness matrix shear
-    K(elementDof,elementDof)=K(elementDof,elementDof)+B_s'*C_shear  *B_s*W(q)*det(J0);  
+    K(elementDof,elementDof)=K(elementDof,elementDof)+B_s'*C_shear  *B_s*W(q)*det(J_mat);  
     
 % Geometric matrix
     G_s1=zeros(2,3*ndof);
-    G_s1(1,ndof+1:2*ndof)    = dNdx(:,1)';  
-    G_s1(2,ndof+1:2*ndof)    = dNdx(:,2)';  
+    G_s1(1,ndof+1:2*ndof)    = N_diff_x_y_cols(:,1)';  
+    G_s1(2,ndof+1:2*ndof)    = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
-        G_s1'*sigmaMatrix*thickness^3/12*G_s1*W(q)*det(J0);
+        G_s1'*sigmaMatrix*thickness^3/12*G_s1*W(q)*det(J_mat);
     
     G_s2=zeros(2,3*ndof);
-    G_s2(1,2*ndof+1:3*ndof)    = dNdx(:,1)';  
-    G_s2(2,2*ndof+1:3*ndof)    = dNdx(:,2)';  
+    G_s2(1,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,1)';  
+    G_s2(2,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,2)';  
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
-        G_s2'*sigmaMatrix*thickness^3/12*G_s2*W(q)*det(J0);
+        G_s2'*sigmaMatrix*thickness^3/12*G_s2*W(q)*det(J_mat);
 
   end  % gauss point
 end    % element
