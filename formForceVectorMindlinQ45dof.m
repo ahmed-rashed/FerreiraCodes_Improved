@@ -11,7 +11,7 @@ function [force]=...
 force=zeros(GDof,1);
 
 % Gauss quadrature for bending part
-[gaussWeights,gaussLocations]=gaussQuadrature('reduced');
+[gaussWeights,gaussLocations]=gaussQuadrature(1);
  
 % cycle for element
 for e=1:numberElements       

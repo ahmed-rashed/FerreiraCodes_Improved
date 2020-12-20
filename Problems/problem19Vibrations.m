@@ -1,40 +1,37 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem19vibrations.m
 % Mindlin plate in free vibrations
 % antonio ferreira 2008
+% Modified by Ahmed Rashed
+% This corrects the strange node numbering of Ferreira
 
-% clear memory
-clearvars;colordef white;clf
+clc
+clearvars
+close all
 
 % materials
-E  = 10920;     poisson = 0.30;  
-thickness=0.1;
-I=thickness^3/12;
+E=10920;
+nu=0.30;  
+h=0.1;
+I=h^3/12;
 rho=1;
-kapa=0.8601; % cccc / cccf case
-%kapa=0.822; % scsc case
+% kapa=0.8601; % cccc / cccf case
+% kapa=0.822; % scsc case
 kapa=5/6;  % ssss case 
 
-% matrix C
+% matrix D
 % bending part
-C_bending=I*E/(1-poisson^2)*...
-    [1 poisson 0;poisson 1 0;0 0 (1-poisson)/2];           
-% shear part
-C_shear=kapa*thickness*E/2/(1+poisson)*eye(2);
+D_b=I*E/(1-nu^2)*[1 nu 0;nu 1 0;0 0 (1-nu)/2];           
 
-% load
-P = -1;
+% shear part
+G=E/2/(1+nu);
+D_s=kapa*h*G*eye(2);
 
 %Mesh generation
-L  = 1;    
+L=1;    
 numberElementsX=10;
 numberElementsY=10;
 numberElements=numberElementsX*numberElementsY;
 
-[nodeCoordinates, elementNodes] = ...
-    rectangularMesh(L,L,numberElementsX,numberElementsY);
+[nodeCoordinates, elementNodes]=rectangularMesh(L,L,numberElementsX,numberElementsY);
 xx=nodeCoordinates(:,1);
 yy=nodeCoordinates(:,2);
 drawingMesh(nodeCoordinates,elementNodes,'Q4','k-');
@@ -45,29 +42,22 @@ numberNodes=size(xx,1);
 GDof=3*numberNodes; 
 
 % computation of the system stiffness and mass matrices
-[stiffness]=...
-    formStiffnessMatrixMindlinQ4(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C_shear,...
-    C_bending,thickness,I);
+K_Assembly=formMatricesMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,D_s,D_b,h,I);
 
-[mass]=...
-formMassMatrixMindlinQ4(GDof,numberElements,...
-elementNodes,numberNodes,nodeCoordinates,thickness,rho,I);
+M_Assembly=formMassMatrixMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,h,rho,I);
 
 % % boundary conditions 
-[prescribedDof,activeDof,fixedNodeW]=...
-EssentialBC('cccc',GDof,xx,yy,nodeCoordinates,numberNodes)
+[prescribedDof,activeDof,fixedNodeW]=EssentialBC('cccc',GDof,xx,yy,nodeCoordinates,numberNodes);
 
 G=E/2.6;
 % V : mode shape
 % D : frequency
 % 
 numberOfModes=12;
-[V,D] = eig(stiffness(activeDof,activeDof),...
-    mass(activeDof,activeDof)); 
-D = diag(sqrt(D)*L*sqrt(rho/G));
-[D,ii] = sort(D); ii = ii(1:numberOfModes); 
-VV = V(:,ii);
+[V,D]=eig(K_Assembly(activeDof,activeDof),M_Assembly(activeDof,activeDof)); 
+D=diag(sqrt(D)*L*sqrt(rho/G));
+[D,ii]=sort(D); ii=ii(1:numberOfModes); 
+VV=V(:,ii);
 activeDofW=setdiff([1:numberNodes]',[fixedNodeW]);
 NNN=size(activeDofW);
     
@@ -82,6 +72,3 @@ y=linspace(-L,L,numberElementsY+1);
 
 % drawing Eigenmodes
 drawEigenmodes2D(x,y,VVV,NN,N,D)
-
-
-

@@ -29,21 +29,20 @@ N_elements_X=20;
 N_elements_Y=10;
 if mod(N_elements_Y,2)~=0,error('N_elements_Y must be even'),end
 N_elements=N_elements_X*N_elements_Y;
-[nodeCoordinates, elementNodes]=rectangularMesh(L_x,L_y,N_elements_X,N_elements_Y);
-N_nodes=size(nodeCoordinates,1);
+[nodeCoordinates_rows, elementNodes]=rectangularMesh(L_x,L_y,N_elements_X,N_elements_Y);
+N_nodes=size(nodeCoordinates_rows,1);
 
 % GDof: global number of degrees of freedom
 GDof=2*N_nodes; 
 
-% calculation of the system stiffness matrix
-[K_Assembly,M_Assembly]=formStiffnessMass2D(GDof,elementNodes,nodeCoordinates,D,rho,h);
+[K_Assembly,M_Assembly]=formStiffnessMass2D(GDof,elementNodes,nodeCoordinates_rows,D,rho,h);
 
 % boundary conditions 
-iNodeLeftEdge=find(nodeCoordinates(:,1)==0);
-iNodeMidLeftEdge=iNodeLeftEdge(nodeCoordinates(iNodeLeftEdge,2)==L_y/2);
-iNodeRightEdge=find(nodeCoordinates(:,1)==L_x);
-iNodeRightTop=iNodeRightEdge(nodeCoordinates(iNodeRightEdge,2)==L_y);
-iNodeRightbottom=iNodeRightEdge(nodeCoordinates(iNodeRightEdge,2)==0);
+iNodeLeftEdge=find(nodeCoordinates_rows(:,1)==0);
+iNodeMidLeftEdge=iNodeLeftEdge(nodeCoordinates_rows(iNodeLeftEdge,2)==L_y/2);
+iNodeRightEdge=find(nodeCoordinates_rows(:,1)==L_x);
+iNodeRightTop=iNodeRightEdge(nodeCoordinates_rows(iNodeRightEdge,2)==L_y);
+iNodeRightbottom=iNodeRightEdge(nodeCoordinates_rows(iNodeRightEdge,2)==0);
 
 prescribedDof={ [2*iNodeLeftEdge-1;2*iNodeMidLeftEdge]
                 [2*iNodeLeftEdge-1;2*iNodeLeftEdge]};
@@ -75,8 +74,8 @@ w_n_rows=nan(N_problems,N_modes);
 
 % Drawing
 matrixShape=[N_elements_Y+1,N_elements_X+1];
-x_mat=reshape(nodeCoordinates(:,1),matrixShape);
-y_mat=reshape(nodeCoordinates(:,2),matrixShape);
+x_mat=reshape(nodeCoordinates_rows(:,1),matrixShape);
+y_mat=reshape(nodeCoordinates_rows(:,2),matrixShape);
 scaleFactor_vec=[10,0.1];
 modeShapescaleFactor=.5;
 
@@ -135,5 +134,5 @@ for iProblem=1:N_problems
     end
 
     % stresses at nodes
-    stresses{iProblem}=stresses2D(elementNodes,N_nodes,nodeCoordinates,D_cols(:,iProblem),D_x_mat(:),D_y_mat(:),D,scaleFactor_vec(iProblem));
+    stresses{iProblem}=stresses2D(elementNodes,N_nodes,nodeCoordinates_rows,D_cols(:,iProblem),D_x_mat(:),D_y_mat(:),D,scaleFactor_vec(iProblem));
 end

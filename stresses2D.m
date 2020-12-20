@@ -3,7 +3,7 @@ function stresses=stresses2D(elementNodes,N_nodes,nodeCoordinates,D_col,UX,UY,C,
 N_elements=size(elementNodes,1);
 
 % 2 by 2 quadrature
-[gaussWeights,gaussLocations]=gaussQuadrature('complete');
+[gaussWeights,gaussLocations]=gaussQuadrature(2);
 
 % stresses at nodes
 N_nodesPerElement=size(elementNodes,2);

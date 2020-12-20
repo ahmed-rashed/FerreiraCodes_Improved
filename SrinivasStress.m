@@ -9,7 +9,7 @@ function SrinivasStress(GDof,numberElements,elementNodes,numberNodes,nodeCoordin
   stress_layer3=zeros(numberElements,4,3);
 
 % Gauss quadrature for bending part
-[gaussWeights,gaussLocations]=gaussQuadrature('complete');
+[gaussWeights,gaussLocations]=gaussQuadrature(2);
  
 % cycle for element
 % cycle for element
@@ -70,7 +70,7 @@ end    % element
     shear_layer3=zeros(numberElements,1,2);
 
 % Gauss quadrature for shear part
-[gaussWeights,gaussLocations]=gaussQuadrature('reduced');
+[gaussWeights,gaussLocations]=gaussQuadrature(1);
  
 % cycle for element
 % cycle for element

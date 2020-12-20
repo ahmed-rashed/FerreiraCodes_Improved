@@ -6,7 +6,7 @@ function [M]=formMassMatrixMindlinQ4laminated5dof(GDof,numberElements,elementNod
 M=zeros(GDof);
 
 % Gauss quadrature for bending part
-[gaussWeights,gaussLocations]=gaussQuadrature('complete');
+[gaussWeights,gaussLocations]=gaussQuadrature(2);
  
 % cycle for element
 for e=1:numberElements       

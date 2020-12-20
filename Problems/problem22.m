@@ -124,21 +124,16 @@ numberNodes=size(xx,1);    % number of nodes
 % GDof: global number of degrees of freedom
 GDof=5*numberNodes; 
 
-% stiffness and mass matrices      
+% stiffness and mass matrices
 stiffness=formStiffnessMatrixMindlinQ45laminated5dof...
-    (GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,CMembranaMembrana,...
-CMembranaFlexao0,CFlexao0Flexao0,CCorte0Corte0);
+    (GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,CMembranaMembrana,CMembranaFlexao0,CFlexao0Flexao0,CCorte0Corte0);
 
-[geometric]=...
-    formGeometricStiffnessMindlinQ45dof(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness);
+geometric=formGeometricStiffnessMindlinQ45dof(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness);
 
 % boundary conditions 
-[prescribedDof,activeDof,fixedNodeW]=...
-    EssentialBC5dof('ssss',GDof,xx,yy,nodeCoordinates,numberNodes);
+[prescribedDof,activeDof,fixedNodeW]=EssentialBC5dof('ssss',GDof,xx,yy,nodeCoordinates,numberNodes);
 
-% buckling analysis ...
+% buckling analysis
 
     % perform eigenproblem
     [V1,D1] = eig(stiffness(activeDof,activeDof),geometric(activeDof,activeDof)); 

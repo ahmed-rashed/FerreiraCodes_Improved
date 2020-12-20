@@ -1,58 +1,50 @@
-%................................................................
-
-% MATLAB codes for Finite Element Analysis
-% problem19Buckling.m
-% this function performs buckling analysis
-% of Mindlin plates using 3 degrees of freedom per node
+% Buckling analysis of Mindlin plates
 % antonio ferreira 2008
+% Modified by Ahmed Rashed
+% This corrects the strange node numbering of Ferreira
 
+clc
 clearvars
-colordef white
+close all
 
-% material properties
-% modulusOfElasticity  = Young's modulus
-% PoissonRatio         = Poisson's ratio
-
-modulusOfElasticity  = 10920;  % Young
-PoissonRatio = 0.30;  % coef. Poisson
+E=10920;
+nu=0.30;
 
 % L: side lenght
-L  = 1;     
+L=1;     
 
-thickness=0.001;
-I=thickness^3/12;
+h=0.001;
+I=h^3/12;
 
 % kapa: shear correction factor
 kapa=5/6;         
 
 % constitutive matrix
 % bending part
-C_bending=...
-    I*modulusOfElasticity/(1-PoissonRatio^2)*...
-    [   1                   PoissonRatio          0 ; 
-        PoissonRatio        1                     0 ; 
-         0                  0    (1-PoissonRatio)/2 ];
-                 
+D_b=I*E/(1-nu^2)*...
+    [   1                   nu          0 ; 
+        nu        1                     0 ; 
+         0                  0    (1-nu)/2 ];
+
 % shear part
-C_shear=...
-kapa*thickness*modulusOfElasticity/2/(1+PoissonRatio)*eye(2);
+G=E/2/(1+nu);
+D_s=kapa*h*G*eye(2);
 
 % initial stress matrix
-sigmaX=1/thickness;
+sigmaX=1/h;
 sigmaXY=0;
 sigmaY=0;
-sigmaMatrix=[ sigmaX sigmaXY; sigmaXY sigmaY];
+sigmaMatrix=[   sigmaX sigmaXY
+                sigmaXY sigmaY];
                          
 % mesh generation ...
-% numberElementsX: number of elements in x
-% numberElementsY: number of elements in y
 numberElementsX=10;
 numberElementsY=10;
 % number of elements
 numberElements=numberElementsX*numberElementsY;
-[nodeCoordinates, elementNodes] = ...
-    rectangularMesh(L, L, numberElementsX, numberElementsY);
-xx=nodeCoordinates(:,1);   yy=nodeCoordinates(:,2);
+[nodeCoordinates, elementNodes]=rectangularMesh(L, L, numberElementsX, numberElementsY);
+xx=nodeCoordinates(:,1);
+yy=nodeCoordinates(:,2);
 figure
 drawingMesh(nodeCoordinates,elementNodes,'Q4','k-');
 axis off
@@ -61,37 +53,30 @@ numberNodes=size(xx,1);    % number of nodes
 GDof=3*numberNodes;        % total number of DOFs
 
 % stiffness and geometric stiffness matrices
-[stiffness]=...
-    formStiffnessMatrixMindlinQ4(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C_shear,...
-    C_bending,thickness,I);
-
-[geometric]=...
-formGeometricStiffnessMindlinQ4(GDof,numberElements,...
-elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness);
+K_Assembly=formMatricesMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,D_s,D_b,h,I);
+K_G_Assembly=formGeometricStiffnessMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,h);
 
 % Essential boundary conditions    
-[prescribedDof,activeDof,fixedNodeW]=...
-EssentialBC('ssss',GDof,xx,yy,nodeCoordinates,numberNodes);
+[prescribedDof,activeDof,fixedNodeW]=EssentialBC('ssss',GDof,xx,yy,nodeCoordinates,numberNodes);
   
 % buckling analysis ...
 
 % perform eigenproblem
-[V1,D1] = eig(stiffness(activeDof,activeDof),...
-    geometric(activeDof,activeDof)); 
-D1 = diag(D1);
+[V1,D1]=eig(K_Assembly(activeDof,activeDof),...
+    K_G_Assembly(activeDof,activeDof)); 
+D1=diag(D1);
 % drawing eigenmodes
 numberOfModes=12;
 % sort out eigenvalues
-[D1,ii] = sort(D1); ii = ii(1:numberOfModes); 
-VV = V1(:,ii);
+[D1,ii]=sort(D1); ii=ii(1:numberOfModes); 
+VV=V1(:,ii);
 activeDofW=setdiff([1:numberNodes]',[fixedNodeW]);
 NNN=size(activeDofW);
 
 % normalize results
 disp('D1(1)/pi/pi/C_bending(1,1)')
-D1(1)/pi/pi/C_bending(1,1)
-D1(1)*pi*pi*C_bending(1,1)
+D1(1)/pi/pi/D_b(1,1)
+D1(1)*pi*pi*D_b(1,1)
 
 VVV(1:numberNodes,1:numberOfModes)=0;
 for i=1:numberOfModes
@@ -102,6 +87,6 @@ NN=numberNodes;N=sqrt(NN);
 x=linspace(-L,L,numberElementsX+1);
 y=linspace(-L,L,numberElementsY+1);
 
-D1=D1/pi/pi/C_bending(1,1);
+D1=D1/pi/pi/D_b(1,1);
 % drawing Eigenmodes
 drawEigenmodes2D(x,y,VVV,NN,N,D1)

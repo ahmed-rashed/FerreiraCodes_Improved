@@ -1,82 +1,54 @@
-%................................................................
-
-function [KG]=...
-    formGeometricStiffnessMindlinQ4(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness)
+function K_G_Assembly=formGeometricStiffnessMindlinQ4(GDof,elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness)
 
 % computation of geometric stiffness
 % for Mindlin plate element
 
-% KG : geometric matrix
-KG=zeros(GDof); 
+% K_G_Assembly : geometric matrix
+K_G_Assembly=zeros(GDof); 
 
 % Gauss quadrature for bending part
-[gaussWeights,gaussLocations]=gaussQuadrature('reduced');
+[gaussWeights_reduced,gaussLocations_reduced_cols]=gaussQuadrature(1);
  
-% cycle for element
-for e=1:numberElements       
-  % indice : nodal condofectivities for each element
-  % elementDof: element degrees of freedom
-  indice=elementNodes(e,:);           
-  elementDof=[indice indice+numberNodes indice+2*numberNodes];    
-  ndof=length(indice);
-  
-  % cycle for Gauss point
-  for q=1:size(gaussWeights,1)                      
-    GaussPoint=gaussLocations(q,:);                                                     
-    xi=GaussPoint(1);
-    eta=GaussPoint(2);
+N_elements=size(elementNodes,1);
+N_nodesPerElement=size(elementNodes,2);
+for iElement=1:N_elements       
+    i_nodes=elementNodes(iElement,:);           
+    elementDof=[i_nodes i_nodes+numberNodes i_nodes+2*numberNodes];    
 
-% shape functions and derivatives
-    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
+    % cycle for Gauss point
+    for n=1:size(gaussWeights_reduced,1)                      
+        xi_reduced_Gauss=gaussLocations_reduced_cols(n,1);
+        eta_reduced_Gauss=gaussLocations_reduced_cols(n,2);
 
-% Jacobian matrix, inverse of Jacobian, 
-% derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
+        % shape functions and derivatives
+        [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi_reduced_Gauss,eta_reduced_Gauss);
+        [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(i_nodes,:),N_diff_xi_eta_cols);
 
-% geometric matrix
-    G_b=zeros(2,3*ndof);
-    G_b(1,1:ndof)  = N_diff_x_y_cols(:,1)';  
-    G_b(2,1:ndof)  = N_diff_x_y_cols(:,2)';  
-    KG(elementDof,elementDof)=KG(elementDof,elementDof)+ ...
-    G_b'*sigmaMatrix*thickness*G_b*gaussWeights(q)*det(J_mat);
-    
-   end  % Gauss point
-  
-end    % element
+        % geometric matrix
+        G_b=zeros(2,3*N_nodesPerElement);
+        G_b(1,1:N_nodesPerElement)=N_diff_x_y_cols(:,1)';  
+        G_b(2,1:N_nodesPerElement)=N_diff_x_y_cols(:,2)';  
+        K_G_Assembly(elementDof,elementDof)=K_G_Assembly(elementDof,elementDof)+G_b'*sigmaMatrix*thickness*G_b*gaussWeights_reduced(n)*det(J_mat);
+    end
+end
 
 % shear stiffness matrix
+for n=1:size(gaussWeights_reduced,1)                      
+    xi_reduced_Gauss=gaussLocations_reduced_cols(n,1);
+    eta_reduced_Gauss=gaussLocations_reduced_cols(n,2);
 
-% Gauss quadrature for shear part
-[W,Q]=gaussQuadrature('reduced');
+    % shape functions and derivatives
+    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi_reduced_Gauss,eta_reduced_Gauss);
+    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(i_nodes,:),N_diff_xi_eta_cols);
 
-% cycle for element
-  for q=1:size(gaussWeights,1)                      
-    GaussPoint=gaussLocations(q,:);                                                        
-    xi=GaussPoint(1);
-    eta=GaussPoint(2);
+    % Geometric matrix
+    G_s1=zeros(2,3*N_nodesPerElement);
+    G_s1(1,N_nodesPerElement+1:2*N_nodesPerElement)=N_diff_x_y_cols(:,1)';  
+    G_s1(2,N_nodesPerElement+1:2*N_nodesPerElement)=N_diff_x_y_cols(:,2)';  
+    K_G_Assembly(elementDof,elementDof)=K_G_Assembly(elementDof,elementDof)+G_s1'*sigmaMatrix*thickness^3/12*G_s1*gaussWeights_reduced(n)*det(J_mat);
 
-% shape functions and derivatives
-    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
-
-% Jacobian matrix, inverse of Jacobian, 
-% derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
-
-% Geometric matrix
-    G_s1=zeros(2,3*ndof);
-    G_s1(1,ndof+1:2*ndof)    = N_diff_x_y_cols(:,1)';  
-    G_s1(2,ndof+1:2*ndof)    = N_diff_x_y_cols(:,2)';  
-    KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
-    G_s1'*sigmaMatrix*thickness^3/12*G_s1*...
-    gaussWeights(q)*det(J_mat);
-    
-    G_s2=zeros(2,3*ndof);
-    G_s2(1,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,1)';  
-    G_s2(2,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,2)';  
-    KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
-    G_s2'*sigmaMatrix*thickness^3/12*G_s2*...
-    gaussWeights(q)*det(J_mat);
-
-  end  % gauss point
-end    % element
+    G_s2=zeros(2,3*N_nodesPerElement);
+    G_s2(1,2*N_nodesPerElement+1:3*N_nodesPerElement)=N_diff_x_y_cols(:,1)';  
+    G_s2(2,2*N_nodesPerElement+1:3*N_nodesPerElement)=N_diff_x_y_cols(:,2)';  
+    K_G_Assembly(elementDof,elementDof)=K_G_Assembly(elementDof,elementDof)+G_s2'*sigmaMatrix*thickness^3/12*G_s2*gaussWeights_reduced(n)*det(J_mat);
+end

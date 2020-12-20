@@ -11,7 +11,7 @@ function [KG]=...
 KG=zeros(GDof); 
 
 % Gauss quadrature for bending part
-[gaussWeights,gaussLocations]=gaussQuadrature('reduced');
+[gaussWeights,gaussLocations]=gaussQuadrature(1);
 
 % cycle for element
 for e=1:numberElements       
@@ -49,7 +49,7 @@ end    % element
 % shear stiffness matrix
 
 % Gauss quadrature for shear part
-[W,Q]=gaussQuadrature('reduced');
+[W,Q]=gaussQuadrature(1);
 
 % cycle for element
 

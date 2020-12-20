@@ -62,16 +62,11 @@ numberNodes=size(xx,1);    % number of nodes
 GDof=3*numberNodes;        % total number of DOFs
 
 % stiffness and geometric stiffness matrices
-[stiffness]=...
-    formStiffnessMatrixMindlinQ4(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,C_shear,...
-    C_bending,thickness,I);
+stiffness=formMatricesMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,C_shear,C_bending,thickness,I);
 
-[geometric]=...
-    formGeometricStiffnessMindlinQ4(GDof,numberElements,...
-    elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness);
+geometric=formGeometricStiffnessMindlinQ4(GDof,numberElements,elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness);
 
-% Essential boundary conditions    
+% Essential boundary conditions
     [prescribedDof,activeDof,fixedNodeW]=...
         EssentialBC('cccc',GDof,xx,yy,nodeCoordinates,numberNodes);
   
