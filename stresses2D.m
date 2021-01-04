@@ -20,15 +20,15 @@ for iElement=1:N_elements
         eta=gaussLocations(q,2);
        
         [~,N_reduced_xi_eta_cols]=shapeFunctionQ4(xi,eta);
-        [~,N_diff_x_y_cols]=Jacobian(nodeCoordinates(i_nodes,:),N_reduced_xi_eta_cols);
+        [~,N_diff_x_y_rows]=Jacobian(nodeCoordinates(i_nodes,:),N_reduced_xi_eta_cols);
 
-        B(1,1:2:end)=N_diff_x_y_cols(:,1).';
-        B(2,2:2:end)=N_diff_x_y_cols(:,2).';
-        B(3,1:2:end)=N_diff_x_y_cols(:,2).';
-        B(3,2:2:end)=N_diff_x_y_cols(:,1).';
+        B(1,1:2:end)=N_diff_x_y_rows(1,:);
+        B(2,2:2:end)=N_diff_x_y_rows(2,:);
+        B(3,1:2:end)=N_diff_x_y_rows(2,:);
+        B(3,2:2:end)=N_diff_x_y_rows(1,:);
 
         stresses(iElement,:,q)=C*B*D_col(elementDof);
-    end                               
+    end
 end   
 
 % % drawing stress fields on top of the deformed shape

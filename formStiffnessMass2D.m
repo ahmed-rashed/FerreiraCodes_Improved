@@ -25,15 +25,15 @@ for iElement=1:N_elements
         xi_Gauss=gaussLocations_cols(n,1);
         eta_Gauss=gaussLocations_cols(n,2);
 
-        [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi_Gauss,eta_Gauss);
+        [N_col,N_diff_xi_eta_rows]=shapeFunctionQ4(xi_Gauss,eta_Gauss);
         N_mat(1,1:2:end)=N_col.';
         N_mat(2,2:2:end)=N_col.';
-        [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(i_nodes,:),N_diff_xi_eta_cols);
+        [J_mat,N_diff_x_y_rows]=Jacobian(nodeCoordinates(i_nodes,:),N_diff_xi_eta_rows);
 
-        B(1,1:2:end)=N_diff_x_y_cols(:,1).';
-        B(2,2:2:end)=N_diff_x_y_cols(:,2).';
-        B(3,1:2:end)=N_diff_x_y_cols(:,2).';
-        B(3,2:2:end)=N_diff_x_y_cols(:,1).';
+        B(1,1:2:end)=N_diff_x_y_rows(1,:);
+        B(2,2:2:end)=N_diff_x_y_rows(2,:);
+        B(3,1:2:end)=N_diff_x_y_rows(2,:);
+        B(3,2:2:end)=N_diff_x_y_rows(1,:);
 
         k_element=k_element+B.'*D*h*B*gaussWeights(n)*det(J_mat);
         m_element=m_element+h*rho*(N_mat.'*N_mat)*gaussWeights(n)*det(J_mat);

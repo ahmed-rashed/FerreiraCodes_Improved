@@ -1,7 +1,4 @@
-%................................................................
-
-function [KG]=...
-    formGeometricStiffnessMindlinQ45dof(GDof,numberElements,...
+function KG=formGeometricStiffnessMindlinQ45dof(GDof,numberElements,...
     elementNodes,numberNodes,nodeCoordinates,sigmaMatrix,thickness)
 
 % computation of geometric stiffness
@@ -23,22 +20,22 @@ for e=1:numberElements
   ndof=length(indice);
   
   % cycle for Gauss point
-  for q=1:size(gaussWeights,1)                      
-    GaussPoint=gaussLocations(q,:);                                                     
+  for q=1:size(gaussWeights,1)
+    GaussPoint=gaussLocations(q,:);
     xi=GaussPoint(1);
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
+    [~,N_diff_xi_eta_rows]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
+    [J_mat,N_diff_x_y_rows]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_rows);
 
 % geometric matrix
     G_b=zeros(2,5*ndof);
-    G_b(1,1:ndof)  = N_diff_x_y_cols(:,1)';  
-    G_b(2,1:ndof)  = N_diff_x_y_cols(:,2)';  
+    G_b(1,1:ndof)  = N_diff_x_y_rows(1,:);
+    G_b(2,1:ndof)  = N_diff_x_y_rows(2,:);
     KG(elementDof,elementDof)=KG(elementDof,elementDof)+ ...
         G_b'*sigmaMatrix*thickness*G_b*gaussWeights(q)*det(J_mat);
     
@@ -68,23 +65,23 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta)
+    [~,N_diff_xi_eta_rows]=shapeFunctionQ4(xi,eta)
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
+    [J_mat,N_diff_x_y_rows]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_rows);
 
         
 % Geometric matrix
     G_s1=zeros(2,5*ndof);
-    G_s1(1,ndof+1:2*ndof)    = N_diff_x_y_cols(:,1)';  
-    G_s1(2,ndof+1:2*ndof)    = N_diff_x_y_cols(:,2)';  
+    G_s1(1,ndof+1:2*ndof)    = N_diff_x_y_rows(1,:);
+    G_s1(2,ndof+1:2*ndof)    = N_diff_x_y_rows(2,:);
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
         G_s1'*sigmaMatrix*thickness^3/12*G_s1*gaussWeights(q)*det(J_mat);
     
     G_s2=zeros(2,5*ndof);
-    G_s2(1,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,1)';  
-    G_s2(2,2*ndof+1:3*ndof)    = N_diff_x_y_cols(:,2)';  
+    G_s2(1,2*ndof+1:3*ndof)    = N_diff_x_y_rows(1,:);
+    G_s2(2,2*ndof+1:3*ndof)    = N_diff_x_y_rows(2,:);
     KG(elementDof,elementDof)  =KG(elementDof,elementDof)+ ...
         G_s2'*sigmaMatrix*thickness^3/12*G_s2*gaussWeights(q)*det(J_mat);
 

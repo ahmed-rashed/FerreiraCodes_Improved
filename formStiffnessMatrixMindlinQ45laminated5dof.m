@@ -1,7 +1,4 @@
-%................................................................
-
-function [K]=...
-    formStiffnessMatrixMindlinQ45laminated5dof(GDof,numberElements,...
+function K=formStiffnessMatrixMindlinQ45laminated5dof(GDof,numberElements,...
     elementNodes,numberNodes,nodeCoordinates,AMatrix,...
     BMatrix,DMatrix,SMatrix)
 
@@ -31,24 +28,24 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
+    [N_col,N_diff_xi_eta_rows]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
-% derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
+% derivatives w.r.t. x,y
+    [J_mat,N_diff_x_y_rows]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_rows);
     
 % [B] matrix bending
     B_b=zeros(3,5*ndof);
-    B_b(1,ndof+1:2*ndof)        = N_diff_x_y_cols(:,1)';  
-    B_b(2,2*ndof+1:3*ndof)      = N_diff_x_y_cols(:,2)';
-    B_b(3,ndof+1:2*ndof)        = N_diff_x_y_cols(:,2)';  
-    B_b(3,2*ndof+1:3*ndof)      = N_diff_x_y_cols(:,1)';
+    B_b(1,ndof+1:2*ndof)        = N_diff_x_y_rows(1,:);
+    B_b(2,2*ndof+1:3*ndof)      = N_diff_x_y_rows(2,:);
+    B_b(3,ndof+1:2*ndof)        = N_diff_x_y_rows(2,:);
+    B_b(3,2*ndof+1:3*ndof)      = N_diff_x_y_rows(1,:);
 % [B] matrix membrane
     B_m=zeros(3,5*ndof);
-    B_m(1,3*ndof+1:4*ndof)      = N_diff_x_y_cols(:,1)';  
-    B_m(2,4*ndof+1:5*ndof)      = N_diff_x_y_cols(:,2)';
-    B_m(3,3*ndof+1:4*ndof)      = N_diff_x_y_cols(:,2)';  
-    B_m(3,4*ndof+1:5*ndof)      = N_diff_x_y_cols(:,1)';
+    B_m(1,3*ndof+1:4*ndof)      = N_diff_x_y_rows(1,:);
+    B_m(2,4*ndof+1:5*ndof)      = N_diff_x_y_rows(2,:);
+    B_m(3,3*ndof+1:4*ndof)      = N_diff_x_y_rows(2,:);
+    B_m(3,4*ndof+1:5*ndof)      = N_diff_x_y_rows(1,:);
     
 % stiffness matrix 
 
@@ -90,17 +87,17 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [N_col,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
+    [N_col,N_diff_xi_eta_rows]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);  
+    [J_mat,N_diff_x_y_rows]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_rows);
     
 % [B] matrix shear
     B_s=zeros(2,5*ndof);
-    B_s(1,1:ndof)       = N_diff_x_y_cols(:,1)';  
-    B_s(2,1:ndof)       = N_diff_x_y_cols(:,2)';
-    B_s(1,ndof+1:2*ndof)  = N_col;           
+    B_s(1,1:ndof)       = N_diff_x_y_rows(1,:);
+    B_s(2,1:ndof)       = N_diff_x_y_rows(2,:);
+    B_s(1,ndof+1:2*ndof)  = N_col;
     B_s(2,2*ndof+1:3*ndof)= N_col;
 
 % stiffness matrix shear

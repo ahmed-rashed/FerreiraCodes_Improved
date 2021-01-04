@@ -1,7 +1,4 @@
-%................................................................
-
-function [force]=...
-    formForceVectorMindlinQ45dof(GDof,numberElements,...
+function force=formForceVectorMindlinQ45dof(GDof,numberElements,...
     elementNodes,numberNodes,nodeCoordinates,P)
 
 % computation of force vector 
@@ -26,15 +23,14 @@ for e=1:numberElements
     eta=GaussPoint(2);
 
 % shape functions and derivatives
-    [~,N_diff_xi_eta_cols]=shapeFunctionQ4(xi,eta);
+    [~,N_diff_xi_eta_rows]=shapeFunctionQ4(xi,eta);
 
 % Jacobian matrix, inverse of Jacobian, 
 % derivatives w.r.t. x,y    
-    [J_mat,N_diff_x_y_cols]=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_cols);
+    J_mat=Jacobian(nodeCoordinates(indice,:),N_diff_xi_eta_rows);
     
 % force vector
-    force(indice)=force(indice)+shapeFunction*P*...
-        det(J_mat)*GaussWeight;    
+    force(indice)=force(indice)+shapeFunction*P*det(J_mat)*GaussWeight;
   end  % Gauss point
   
 end    % element
